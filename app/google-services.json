@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1096957730793",
+    "firebase_url": "https://mytip-22034.firebaseio.com",
+    "project_id": "mytip-22034",
+    "storage_bucket": "mytip-22034.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1096957730793:android:b10f9f72a4ab3b56233578",
+        "android_client_info": {
+          "package_name": "com.example.mytip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1096957730793-0p7g6ql9ar3b8bo0qnct6ok8fj6cdlb7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mytip",
+            "certificate_hash": "1333cdbc5b6a3f7d877bd9c084fc0c1df8340747"
+          }
+        },
+        {
+          "client_id": "1096957730793-dbb4auopdaq3tc0lvgfputtd065r964g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjWpQP1pLK2UtyRMT7UT3fUVwhw6JP5n4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1096957730793-dbb4auopdaq3tc0lvgfputtd065r964g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
