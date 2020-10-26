@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -21,15 +23,18 @@ import java.util.Map;
 
 public class UploadActivity extends AppCompatActivity {
     private TextView ttitle, tplace, tdate, tseat;
-    private String id, title, place, date, seat, review;
+    private String uid, title, place, date, seat, review;
     private Button btn;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
-        id = getIntent().getStringExtra("id");
+        firebaseAuth =  FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        uid = user.getUid();
         title = getIntent().getStringExtra("title");
         place = getIntent().getStringExtra("place");
         date = getIntent().getStringExtra("date");
@@ -50,7 +55,7 @@ public class UploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
-                intent.putExtra("id",id);
+                intent.putExtra("id",uid);
                 startActivity(intent);
             }
         });
@@ -74,7 +79,7 @@ public class UploadActivity extends AppCompatActivity {
         data.put("time", time);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(id)
+        db.collection("users").document(uid)
                 .collection("performance").document(key)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

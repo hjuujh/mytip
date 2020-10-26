@@ -13,11 +13,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 //import com.google.android.gms.tasks.OnFailureListener;
 //import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,18 +32,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText editid, editpw;
+    private EditText editem, editpw;
     private TextView text1, text2;
-    private String id, pw, pass;
+    private String email, pw, pass;
     private Button btn1, btn2;
     private AlertDialog.Builder alter;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser cuser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        editid = (EditText)findViewById(R.id.et_id);
+        firebaseAuth =  FirebaseAuth.getInstance();
+
+        editem = (EditText)findViewById(R.id.et_em);
         editpw = (EditText)findViewById(R.id.et_pass);
         text1 = (TextView)findViewById(R.id.pwfail);
         text2 = (TextView)findViewById(R.id.idfail);
@@ -58,10 +68,10 @@ public class LoginActivity extends AppCompatActivity {
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                id = editid.getText().toString();
-                pw = editpw.getText().toString();
+                email = editem.getText().toString().trim();
+                pw = editpw.getText().toString().trim();
 
-                if ( id.length() == 0 ) {
+                if ( email.length() == 0 ) {
                     alter.setTitle("입력 확인");
                     alter.setMessage("ID를 입력해주세요.");
                     alter.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
@@ -83,52 +93,74 @@ public class LoginActivity extends AppCompatActivity {
                     text1.setVisibility(View.GONE);
                     text2.setVisibility(View.GONE);
 
-                    users(id, pw);
+                    login();
                 }
+
+
             }
         });
     }
 
-    public void users(String id, final String pw){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(id);
+    private void login() {
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            final String TAG = "";
-
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                if (task.isSuccessful()){
-                    DocumentSnapshot doc = task.getResult();
-                    if (doc.exists()){
-                        Log.d(TAG, "DocumentSnapshot data: " + doc.getData());
-                        pass = (String) doc.getData().get("password");
-                        if(pw.equals(pass)){
-//                            Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
-//                            Intent intent = new Intent(getApplicationContext(),TicketActivity.class);
-                            Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
-                            intent.putExtra("id",id);
+        firebaseAuth.signInWithEmailAndPassword(email,pw)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this,"로그인 성공", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+                            intent.putExtra("id", email);
                             startActivity(intent);
                         }
-                        else{
-                            text1.setText("비밀번호가 틀렸습니다.");
-                            text1.setTextColor(Color.RED);
-                            text1.setVisibility(View.VISIBLE);
+                        else {
+                            String message = task.getException().getMessage();
+                            Toast.makeText(LoginActivity.this,message, Toast.LENGTH_SHORT).show();
                         }
                     }
-                    else {
-                        Log.d(TAG, "No such document");
-                        text2.setText("아이디가 존재하지 않습니다.");
-                        text2.setTextColor(Color.RED);
-                        text2.setVisibility(View.VISIBLE);
-                    }
-                }
-                else{
-                    Log.d(TAG, "Get failed with ", task.getException());
-                    System.out.println("Get failed with " + task.getException());
-                }
-            }
-        });
-    }
+                });
+        }
 }
+
+//    public void users(String id, final String pw){
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        DocumentReference docRef = db.collection("users").document(id);
+//
+//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            final String TAG = "";
+//
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//
+//                if (task.isSuccessful()){
+//                    DocumentSnapshot doc = task.getResult();
+//                    if (doc.exists()){
+//                        Log.d(TAG, "DocumentSnapshot data: " + doc.getData());
+//                        pass = (String) doc.getData().get("password");
+//                        if(pw.equals(pass)){
+////                            Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
+////                            Intent intent = new Intent(getApplicationContext(),TicketActivity.class);
+//                            Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
+//                            intent.putExtra("id",id);
+//                            startActivity(intent);
+//                        }
+//                        else{
+//                            text1.setText("비밀번호가 틀렸습니다.");
+//                            text1.setTextColor(Color.RED);
+//                            text1.setVisibility(View.VISIBLE);
+//                        }
+//                    }
+//                    else {
+//                        Log.d(TAG, "No such document");
+//                        text2.setText("아이디가 존재하지 않습니다.");
+//                        text2.setTextColor(Color.RED);
+//                        text2.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//                else{
+//                    Log.d(TAG, "Get failed with ", task.getException());
+//                    System.out.println("Get failed with " + task.getException());
+//                }
+//            }
+//        });
+//    }

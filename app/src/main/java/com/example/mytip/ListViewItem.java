@@ -2,6 +2,9 @@ package com.example.mytip;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.widget.ListView;
+
+import java.util.List;
 
 public class ListViewItem {
     private Bitmap ticket;
@@ -9,6 +12,14 @@ public class ListViewItem {
     private String title;
     private String date;
 
+    ListViewItem(){
+    }
+
+    ListViewItem(Uri uri, String title, String date){
+        this.uri = uri;
+        this.title = title;
+        this.date = date;
+    }
     public Bitmap getTicket() {
         return ticket;
     }

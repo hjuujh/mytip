@@ -27,13 +27,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StreamDownloadTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
@@ -48,26 +51,28 @@ import static java.lang.System.currentTimeMillis;
 
 public class ReviewActivity extends AppCompatActivity {
     private Button btn;
-    private String id, title, date;
+    private String uid, title, date;
     private Context context;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth firebaseAuth;
+    final long ONE_MEGABYTE = 1024 * 1024;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
 
-        id = getIntent().getStringExtra("id");
+        firebaseAuth =  FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        uid = user.getUid();
 
         ListView listview;
         ListViewAdapter adapter;
-        mAuth = FirebaseAuth.getInstance();
         btn = findViewById(R.id.getdata);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),TicketActivity.class);
-                intent.putExtra("id",id);
+                intent.putExtra("uid",uid);
                 startActivity(intent);
             }
         });
@@ -81,17 +86,7 @@ public class ReviewActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 //        DocumentReference docRef = db.collection("users").document(id).collection("performance").document();
-        CollectionReference colRef = db.collection("users").document(id).collection("performance");
-
-        //Firebase Storage에 저장되어 있는 이미지 파일 읽어오기
-        //1. Firebase Storeage관리 객체 얻어오기
-        FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-
-        //2. 최상위노드 참조 객체 얻어오기
-        StorageReference rootRef= firebaseStorage.getReference();
-
-        //읽어오길 원하는 파일의 참조객체 얻어오기
-        //예제에서는 자식노드 이름은 monkey.png
+        CollectionReference colRef = db.collection("users").document(uid).collection("performance");
 
         colRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             final String TAG = "";
@@ -107,26 +102,26 @@ public class ReviewActivity extends AppCompatActivity {
                         title = (String) q.getData().get("title");
                         date = (String) q.getData().get("date");
                         String key = title+date;
+                        System.out.println(key);
 
-                        StorageReference imgRef= rootRef.child(id+"/performance/"+ key);
-                        adapter.addItem(title, date);
-//                        if(imgRef!=null) {
-//                            //참조객체로 부터 이미지의 다운로드 URL을 얻어오기
-//                            imgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                @Override
-//                                public void onSuccess(Uri uri) {
-//
-//                                    //다운로드 URL이 파라미터로 전달되어 옴.
-//                                    //                                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-////                                        System.out.println("###########################");
-////                                        System.out.println(bitmap);
-//                                    adapter.addItem(uri, title, date);
-//                                    //                    Glide.with(MainActivity.this).load(uri).into(iv);
-//                                }
-//                            });
-//                        }
-                        listview.setAdapter(adapter);
+                        FirebaseStorage storage= FirebaseStorage.getInstance("gs://mytip-22034.appspot.com/");
+                        StorageReference ref= storage.getReference();
 
+                        ref.child(uid+"/performance/"+ key).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                System.out.println("##############1");
+                                System.out.println(uri);
+                                adapter.addItem(uri, title, date);
+                                listview.setAdapter(adapter);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                       listview.setAdapter(adapter);
                     }
 //
 //                    if (doc.getDocuments()) {

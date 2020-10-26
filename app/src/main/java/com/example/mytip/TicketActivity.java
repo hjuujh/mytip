@@ -40,6 +40,8 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.internal.$Gson$Preconditions;
@@ -74,8 +76,9 @@ public class TicketActivity extends AppCompatActivity {
     private ProgressBar bar;
     private Button upbtn;
 
-    private static String id, date, title, place, seating;
+    private static String uid, date, title, place, seating;
     private static Uri imgUri;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +99,17 @@ public class TicketActivity extends AppCompatActivity {
         bar = findViewById(R.id.progressBar);
         Button upbtn = findViewById(R.id.upload);
 
-        id = getIntent().getStringExtra("id");
+//        id = getIntent().getStringExtra("id");
+        firebaseAuth =  FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        uid = user.getUid();
+        System.out.println("#################");
+        System.out.println(uid);
         upbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),UploadActivity.class);
-                intent.putExtra("id",id);
+                intent.putExtra("uid",uid);
                 intent.putExtra("title",title);
                 intent.putExtra("place",place);
                 intent.putExtra("date",date);
@@ -482,7 +490,7 @@ public class TicketActivity extends AppCompatActivity {
             String key = title+date;
             //폴더없으면 자동생성
             //id, movie/performance, title+date 받아와 넣음
-            StorageReference imgRef= firebaseStorage.getReference(id+"/performance/"+key);
+            StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
 //
             //참조 객체를 통해 이미지 파일 업로드
             imgRef.putFile(imgUri);
