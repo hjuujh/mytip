@@ -222,7 +222,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
                 else {
                     String message = task.getException().getMessage();
-                    Toast.makeText(SignupActivity.this, "이미 존재하는 이메일 입니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this,message, Toast.LENGTH_SHORT).show();
                     return;  //해당 메소드 진행을 멈추고 빠져나감.
                 }
 

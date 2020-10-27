@@ -560,14 +560,9 @@ public class TicketActivity extends AppCompatActivity {
         private void imgUpload() {
             FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
-            //2. 업로드할 파일의 node를 참조하는 객체
-            //파일 명이 중복되지 않도록 날짜를 이용 -> title+date로 할 예정 + 확장자 통일
             String key = title+date;
-            //폴더없으면 자동생성
-            //id, movie/performance, title+date 받아와 넣음
             StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
-//
-            //참조 객체를 통해 이미지 파일 업로드
+
             imgRef.putFile(imgUri);
             System.out.println("이미지 업로드 성공");
         }

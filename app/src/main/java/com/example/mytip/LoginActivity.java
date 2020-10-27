@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -110,11 +111,15 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this,"로그인 성공", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+//                            Intent intent = new Intent(getApplicationContext(), TicketActivity.class);
                             intent.putExtra("id", email);
                             startActivity(intent);
                         }
                         else {
                             String message = task.getException().getMessage();
+                            String errorCode = ((FirebaseAuthInvalidCredentialsException) task.getException()).getErrorCode();
+                            System.out.println("####################");
+                            System.out.println(errorCode);
                             Toast.makeText(LoginActivity.this,message, Toast.LENGTH_SHORT).show();
                         }
                     }

@@ -71,12 +71,14 @@ public class UploadActivity extends AppCompatActivity {
         SimpleDateFormat mFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = mFormat.format(d);
         String key = title+date;
+        String img = "gs://mytip-22034.appspot.com/" + uid + "/performance/" + key;
 
         data.put("title", title);
         data.put("date", date);
         data.put("review", review);
         data.put("seat", seat);
         data.put("time", time);
+        data.put("img", img);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(uid)
