@@ -2,6 +2,8 @@ package com.example.mytip;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.Manifest;
 import android.content.Intent;
@@ -71,7 +73,7 @@ public class TicketActivity extends AppCompatActivity {
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
 
-    private TextView mImageDetails;
+    private TextView mImageDetails;//chae - 나중에 없앨것
     private ImageView mMainImage;
     private ProgressBar bar;
     private Button upbtn;
@@ -79,6 +81,8 @@ public class TicketActivity extends AppCompatActivity {
     private static String uid, date, title, place, seating;
     private static Uri imgUri;
     private FirebaseAuth firebaseAuth;
+
+    Bitmap bitmap;//티켓사진
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +163,25 @@ public class TicketActivity extends AppCompatActivity {
         } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
             Uri photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", getCameraFile());
             uploadImage(photoUri);
+        }else if(requestCode == 0){
+            final Bundle extras = data.getExtras();
+
+            if(extras != null)
+            {
+                bitmap = extras.getParcelable("data");
+                mMainImage.setImageBitmap(bitmap);
+            }
+            // 임시 파일 삭제
+            File f = new File(reuri.getPath());
+            if(f.exists())
+            {
+                f.delete();
+            }
         }
+        if(resultCode != RESULT_OK)
+        {
+            return;
+        }//chae-??
     }
 
     @Override
@@ -184,12 +206,12 @@ public class TicketActivity extends AppCompatActivity {
         if (uri != null) {
             try {
                 // scale the image to save on bandwidth
-                Bitmap bitmap =
+                bitmap =
                         scaleBitmapDown(
                                 MediaStore.Images.Media.getBitmap(getContentResolver(), uri),
                                 MAX_DIMENSION);
 
-                callCloudVision(bitmap);
+                //callCloudVision(bitmap);
                 mMainImage.setImageBitmap(bitmap);
 
             } catch (IOException e) {
@@ -201,6 +223,59 @@ public class TicketActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.image_picker_error, Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    public void turnClick(View view) {
+        try {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            mMainImage.setImageBitmap(bitmap);
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    Uri reuri;//자르는 uri
+
+    public void resizeClick(View view) {
+        try {
+            Log.d("3333","why??");
+            reuri = getImageUri(getApplicationContext(),bitmap);
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            intent.setType("image/*");
+            intent.setData(reuri);
+            //intent.setDataAndType(reuri, "image/*");
+
+            intent.putExtra("outputX", 400);
+            intent.putExtra("outputY", 240);
+            intent.putExtra("aspectX", 20);
+            intent.putExtra("aspectY", 12);
+            intent.putExtra("scale", true);
+            intent.putExtra("return-data", true);
+            startActivityForResult(intent, 0);
+
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Uri getImageUri(Context context, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        Log.d("3333","dd");
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);//chae 여기서 문제
+        Log.d("3333","why??22");
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public void textClick(View view) {
+        try {
+            callCloudVision(bitmap);
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private Vision.Images.Annotate prepareAnnotationRequest(Bitmap bitmap) throws IOException {
@@ -502,7 +577,9 @@ public class TicketActivity extends AppCompatActivity {
     private void callCloudVision(final Bitmap bitmap) {
         // Switch text to loading
         mImageDetails.setText(R.string.loading_message);
-        bar.setVisibility(View.VISIBLE);
+
+        if (bitmap != null)
+            bar.setVisibility(View.VISIBLE);
 
         // Do the real work in an async task, because we need to use the network anyway
         try {
