@@ -6,10 +6,11 @@
     android:padding="16dp"
     tools:context=".ReviewActivity">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
+    <Button
+        android:id="@+id/addbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="추가"
         android:layout_centerHorizontal="true"/>
 
     <androidx.recyclerview.widget.RecyclerView

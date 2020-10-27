@@ -1,6 +1,9 @@
 package com.example.mytip;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,7 +25,10 @@ import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,6 +38,14 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,12 +57,13 @@ public class ReviewActivity extends AppCompatActivity {
     private Context context;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
-//    @BindView(R.id.progress_bar)
-//    private ProgressBar progressBar;
+    @BindView(R.id.addbtn)
+    Button addBtn;
     @BindView(R.id.review_list)
     RecyclerView reviewList;
     private FirestoreRecyclerAdapter adapter;
     LinearLayoutManager linearLayoutManager;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +78,14 @@ public class ReviewActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         init();
         getReviewList();
+
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),TicketActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void init(){
@@ -82,40 +106,18 @@ public class ReviewActivity extends AppCompatActivity {
         adapter = new FirestoreRecyclerAdapter<ReviewList, ReviewsHolder>(response) {
             @Override
             public void onBindViewHolder(ReviewsHolder holder, int position, ReviewList model) {
-//                progressBar.setVisibility(View.GONE);
 
                 FirebaseStorage fs = FirebaseStorage.getInstance();
-                StorageReference sr = fs.getReference().child(uid + "/performance/" + model.getTitle() + model.getDate());
-                sr.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                StorageReference sr = fs.getReference().child(uid + "/performance/" + model.getTitle()+model.getDate());
+                sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.get()
-                                .load(uri.toString())
-                                .fit()
-                                .centerCrop()
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        Glide.with(holder.itemView)
+                                .load(task.getResult())
                                 .into(holder.imageView);
                     }
                 });
-//                sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Uri> task) {
-//                        if(task.isSuccessful()){
-//                            System.out.println(task.getResult());
-////                            Picasso.get()
-////                                    .load(task.getResult())
-////                                    .fit()
-////                                    .centerCrop()
-////                                    .into(holder.imageView);
-//                            Glide.with(getApplicationContext())
-//                                    .load(task.getResult())
-//                                    .into(holder.imageView);
-//                        }
-//                        else {
-//                            // URL을 가져오지 못하면 토스트 메세지
-//                            Toast.makeText(ReviewActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
+
                 holder.textTitle.setText(model.getTitle());
                 holder.textDate.setText(model.getDate());
 
@@ -152,8 +154,6 @@ public class ReviewActivity extends AppCompatActivity {
         TextView textTitle;
         @BindView(R.id.date)
         TextView textDate;
-
-        CardView cardView;
 
         public ReviewsHolder(View itemView) {
             super(itemView);
