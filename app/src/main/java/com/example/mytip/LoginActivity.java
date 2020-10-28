@@ -103,6 +103,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
+        FirebaseAuthInvalidUserException invail = new FirebaseAuthInvalidUserException("a","b");
+        String invaildexception = invail.getClass().getName();
 
         firebaseAuth.signInWithEmailAndPassword(email,pw)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -116,56 +118,26 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                         else {
-                            String message = task.getException().getMessage();
-                            String errorCode = ((FirebaseAuthInvalidCredentialsException) task.getException()).getErrorCode();
-                            System.out.println("####################");
-                            System.out.println(errorCode);
+                            String message;
+                            String errorCode;
+                            if(task.getException().getClass().getName().equals(invaildexception)){
+                                message = "이메일이 존재하지 않습니다.";
+                            }
+                            else {
+                                errorCode = ((FirebaseAuthInvalidCredentialsException) task.getException()).getErrorCode();
+                                if(errorCode.equals("ERROR_INVALID_EMAIL")){
+                                    message = "이메일 형식이 잘못되었습니다.";
+                                }
+                                else if(errorCode.equals("ERROR_WRONG_PASSWORD")){
+                                    message = "비밀번호가 틀렸습니다.";
+                                }
+                                else{
+                                    message = errorCode;
+                                }
+                            }
                             Toast.makeText(LoginActivity.this,message, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
         }
 }
-
-//    public void users(String id, final String pw){
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        DocumentReference docRef = db.collection("users").document(id);
-//
-//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            final String TAG = "";
-//
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//
-//                if (task.isSuccessful()){
-//                    DocumentSnapshot doc = task.getResult();
-//                    if (doc.exists()){
-//                        Log.d(TAG, "DocumentSnapshot data: " + doc.getData());
-//                        pass = (String) doc.getData().get("password");
-//                        if(pw.equals(pass)){
-////                            Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
-////                            Intent intent = new Intent(getApplicationContext(),TicketActivity.class);
-//                            Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
-//                            intent.putExtra("id",id);
-//                            startActivity(intent);
-//                        }
-//                        else{
-//                            text1.setText("비밀번호가 틀렸습니다.");
-//                            text1.setTextColor(Color.RED);
-//                            text1.setVisibility(View.VISIBLE);
-//                        }
-//                    }
-//                    else {
-//                        Log.d(TAG, "No such document");
-//                        text2.setText("아이디가 존재하지 않습니다.");
-//                        text2.setTextColor(Color.RED);
-//                        text2.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//                else{
-//                    Log.d(TAG, "Get failed with ", task.getException());
-//                    System.out.println("Get failed with " + task.getException());
-//                }
-//            }
-//        });
-//    }
