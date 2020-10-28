@@ -79,10 +79,11 @@ public class TicketActivity extends AppCompatActivity {
     private Button upbtn;
 
     private static String uid, date, title, place, seating;
-    private static Uri imgUri;
+    private static Uri imgUri, reuri;
     private FirebaseAuth firebaseAuth;
 
     Bitmap bitmap;//티켓사진
+    boolean next;//자르기 했는지
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +94,8 @@ public class TicketActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
             builder
                     .setMessage(R.string.dialog_select_prompt)
-                    .setPositiveButton(R.string.dialog_select_gallery, (dialog, which) -> startGalleryChooser())
-                    .setNegativeButton(R.string.dialog_select_camera, (dialog, which) -> startCamera());
+                    .setPositiveButton("갤러리", (dialog, which) -> startGalleryChooser())
+                    .setNegativeButton("카메라", (dialog, which) -> startCamera());
             builder.create().show();
         });
 
@@ -112,13 +113,18 @@ public class TicketActivity extends AppCompatActivity {
         upbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),UploadActivity.class);
-                intent.putExtra("uid",uid);
-                intent.putExtra("title",title);
-                intent.putExtra("place",place);
-                intent.putExtra("date",date);
-                intent.putExtra("seat",seating);
-                startActivity(intent);
+                if(next==false)
+                    Toast.makeText(TicketActivity.this, "사진을 먼저 잘라주세요", Toast.LENGTH_SHORT).show();
+                else {
+                    Intent intent = new Intent(getApplicationContext(), UploadActivity.class);
+                    intent.putExtra("uid", uid);
+                    intent.putExtra("title", title);
+                    intent.putExtra("place", place);
+                    intent.putExtra("date", date);
+                    intent.putExtra("seat", seating);
+                    imgUpload();
+                    startActivity(intent);
+                }
             }
         });
 
@@ -181,7 +187,7 @@ public class TicketActivity extends AppCompatActivity {
         if(resultCode != RESULT_OK)
         {
             return;
-        }//chae-??
+        }//chae-임시파일 삭제 안돼
     }
 
     @Override
@@ -210,7 +216,7 @@ public class TicketActivity extends AppCompatActivity {
                         scaleBitmapDown(
                                 MediaStore.Images.Media.getBitmap(getContentResolver(), uri),
                                 MAX_DIMENSION);
-
+                next=false;
                 //callCloudVision(bitmap);
                 mMainImage.setImageBitmap(bitmap);
 
@@ -237,11 +243,8 @@ public class TicketActivity extends AppCompatActivity {
         }
     }
 
-    Uri reuri;//자르는 uri
-
     public void resizeClick(View view) {
         try {
-            Log.d("3333","why??");
             reuri = getImageUri(getApplicationContext(),bitmap);
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setType("image/*");
@@ -255,6 +258,7 @@ public class TicketActivity extends AppCompatActivity {
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, 0);
+            next=true;
 
         } catch (NullPointerException e) {
             Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
@@ -263,9 +267,7 @@ public class TicketActivity extends AppCompatActivity {
 
     private Uri getImageUri(Context context, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        Log.d("3333","dd");
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);//chae 여기서 문제
-        Log.d("3333","why??22");
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
         return Uri.parse(path);
     }
@@ -547,7 +549,6 @@ public class TicketActivity extends AppCompatActivity {
             ProgressBar bar = activity.findViewById(R.id.progressBar);
             bar.setVisibility(View.GONE);
 
-            imgUpload();
             Button upbtn = activity.findViewById(R.id.upload);
             upbtn.setVisibility(View.VISIBLE);
 
@@ -557,15 +558,15 @@ public class TicketActivity extends AppCompatActivity {
 //            }
 
         }
-        private void imgUpload() {
-            FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
+    }
+    private void imgUpload() {
+        FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
-            String key = title+date;
-            StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
+        String key = title+date;
+        StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
 
-            imgRef.putFile(imgUri);
-            System.out.println("이미지 업로드 성공");
-        }
+        imgRef.putFile(reuri);
+        System.out.println("이미지 업로드 성공");
     }
 
 
