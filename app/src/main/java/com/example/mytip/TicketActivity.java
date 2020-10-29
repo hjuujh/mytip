@@ -79,7 +79,7 @@ public class TicketActivity extends AppCompatActivity {
     private Button upbtn;
 
     private static String uid, date, title, place, seating;
-    private static Uri imgUri, reuri;
+    private static Uri imgUri;
     private FirebaseAuth firebaseAuth;
 
     Bitmap bitmap;//티켓사진
@@ -122,6 +122,7 @@ public class TicketActivity extends AppCompatActivity {
                     intent.putExtra("place", place);
                     intent.putExtra("date", date);
                     intent.putExtra("seat", seating);
+                    imgUri = getImageUri(getApplicationContext(),bitmap);
                     imgUpload();
                     startActivity(intent);
                 }
@@ -178,7 +179,7 @@ public class TicketActivity extends AppCompatActivity {
                 mMainImage.setImageBitmap(bitmap);
             }
             // 임시 파일 삭제
-            File f = new File(reuri.getPath());
+            File f = new File(imgUri.getPath());
             if(f.exists())
             {
                 f.delete();
@@ -245,10 +246,10 @@ public class TicketActivity extends AppCompatActivity {
 
     public void resizeClick(View view) {
         try {
-            reuri = getImageUri(getApplicationContext(),bitmap);
+            imgUri = getImageUri(getApplicationContext(),bitmap);
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setType("image/*");
-            intent.setData(reuri);
+            intent.setData(imgUri);
             //intent.setDataAndType(reuri, "image/*");
 
             intent.putExtra("outputX", 400);
@@ -565,7 +566,7 @@ public class TicketActivity extends AppCompatActivity {
         String key = title+date;
         StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
 
-        imgRef.putFile(reuri);
+        imgRef.putFile(imgUri);
         System.out.println("이미지 업로드 성공");
     }
 
