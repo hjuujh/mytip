@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this,"로그인 성공", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), ReviewListActivity.class);
 //                            Intent intent = new Intent(getApplicationContext(), TicketActivity.class);
                             intent.putExtra("id", email);
                             startActivity(intent);

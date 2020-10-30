@@ -62,7 +62,7 @@ public class UploadActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),ReviewActivity.class);
+                Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
                 intent.putExtra("id",uid);
                 startActivity(intent);
             }
@@ -98,6 +98,7 @@ public class UploadActivity extends AppCompatActivity {
         data.put("date", date);
         data.put("review", review);
         data.put("seat", seat);
+        data.put("place", place);
         data.put("time", time);
     }
 
