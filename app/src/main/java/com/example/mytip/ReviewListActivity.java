@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,12 +35,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReviewListActivity extends AppCompatActivity {
-    private String uid;
+    private String uid, id;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
     @BindView(R.id.review_list)
     RecyclerView reviewList;
     private FirestoreRecyclerAdapter adapter;
+    private Intent intent;
+    private boolean me;
+    private BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +52,34 @@ public class ReviewListActivity extends AppCompatActivity {
 
         firebaseAuth =  FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        uid = user.getUid();
+
+        try {
+            id = getIntent().getExtras().getString("id");
+            uid = id;
+            me = false;
+        }
+        catch (Exception e){
+            uid = user.getUid();
+            me = true;
+        }
 
         ButterKnife.bind(this);
         init();
         getReviewList();
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_list);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        if(me){
+            navigation = (BottomNavigationView) findViewById(R.id.my_list);
+            navigation.setVisibility(View.VISIBLE);
+            navigation.setOnNavigationItemSelectedListener(myOnNavigationItemSelectedListener);
+            navigation.setSelectedItemId(R.id.performance);
+        }
+        else{
+            navigation = (BottomNavigationView) findViewById(R.id.other_list);
+            navigation.setVisibility(View.VISIBLE);
+            navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
+            navigation.setSelectedItemId(R.id.performance);
+        }
+
     }
 
     private void init(){
@@ -90,13 +115,14 @@ public class ReviewListActivity extends AppCompatActivity {
                 holder.textTitle.setText(model.getTitle());
                 holder.textDate.setText(model.getDate());
 
-
                 holder.itemView.setOnClickListener(v -> {
 //                    Snackbar.make(reviewList, model.getTitle()+" at "+model.getDate(), Snackbar.LENGTH_LONG)
 //                            .setAction("Action", null).show();
                     Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+                    intent.putExtra("uid", uid);
                     intent.putExtra("title", model.getTitle());
                     intent.putExtra("date", model.getDate());
+                    intent.putExtra("me", me);
                     startActivity(intent);
                 });
             }
@@ -145,14 +171,14 @@ public class ReviewListActivity extends AppCompatActivity {
         adapter.stopListening();
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    private BottomNavigationView.OnNavigationItemSelectedListener myOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.add:
-                    Intent intent = new Intent(getApplicationContext(), TicketActivity.class);
+                    intent = new Intent(getApplicationContext(), TicketActivity.class);
                     startActivity(intent);
                     return true;
                 case R.id.performance:
@@ -162,6 +188,30 @@ public class ReviewListActivity extends AppCompatActivity {
                     return true;
                 case R.id.others:
 //                    다른 유저 리스트 액티비티 추가
+                    intent = new Intent(getApplicationContext(), UserListActivity.class);
+                    startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+    private BottomNavigationView.OnNavigationItemSelectedListener otherOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.add:
+//                    Toast.makeText(getApplicationContext(), "다른 사용자의 리스트입니다.", Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.performance:
+                    return true;
+                case R.id.movie:
+//                    영화리스트 액티비티 추가
+                    return true;
+                case R.id.back:
+                    finish();
                     return true;
             }
             return false;

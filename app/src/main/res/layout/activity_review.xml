@@ -55,8 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         app:menu="@menu/review_menu"
-        app:itemIconTint="@drawable/menu_selector"
-        app:itemTextColor="@drawable/menu_selector"
+        app:itemIconTint="@drawable/review_menu_selector"
+        app:itemTextColor="@drawable/review_menu_selector"
         android:layout_below="@id/review"
         />
 

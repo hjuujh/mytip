@@ -19,12 +19,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:divider="#00000000"
-        android:layout_above="@id/navigation_list"
+        android:layout_above="@id/my_list"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navigation_list"
+        android:id="@+id/my_list"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="start"
@@ -34,9 +34,21 @@
         app:itemTextColor="@drawable/menu_selector"
         android:layout_weight="1"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/review_list"-->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/other_list"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="start"
+        app:layout_constraintBottom_toBottomOf="@+id/review_list"
+        app:menu="@menu/other_menu"
+        app:itemIconTint="@drawable/menu_selector"
+        app:itemTextColor="@drawable/menu_selector"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>
