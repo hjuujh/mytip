@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_ticket"
+        android:title="@string/add"/>
+
+    <item
+        android:id="@+id/performance"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_stage"
+        android:title="@string/performance"/>
+
+    <item
+        android:id="@+id/movie"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_movie"
+        android:title="@string/movie" />
+
+    <item
+        android:id="@+id/others"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_people"
+        android:title="@string/others"/>
+
+</menu>

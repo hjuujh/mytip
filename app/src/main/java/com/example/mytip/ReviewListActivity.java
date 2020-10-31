@@ -1,16 +1,13 @@
 package com.example.mytip;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -23,6 +20,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,14 +33,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReviewListActivity extends AppCompatActivity {
-    //    @BindView(R.id.getdata)
-    private Button btn;
-    private String uid, title, date;
-    private Context context;
+    private String uid;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
-    @BindView(R.id.addbtn)
-    Button addBtn;
     @BindView(R.id.review_list)
     RecyclerView reviewList;
     private FirestoreRecyclerAdapter adapter;
@@ -60,13 +53,8 @@ public class ReviewListActivity extends AppCompatActivity {
         init();
         getReviewList();
 
-        addBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),TicketActivity.class);
-                startActivity(intent);
-            }
-        });
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_list);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     private void init(){
@@ -156,5 +144,28 @@ public class ReviewListActivity extends AppCompatActivity {
         super.onStop();
         adapter.stopListening();
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.add:
+                    Intent intent = new Intent(getApplicationContext(), TicketActivity.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.performance:
+                    return true;
+                case R.id.movie:
+//                    영화리스트 액티비티 추가
+                    return true;
+                case R.id.others:
+//                    다른 유저 리스트 액티비티 추가
+                    return true;
+            }
+            return false;
+        }
+    };
 
 }

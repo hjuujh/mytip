@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -58,6 +60,9 @@ public class ReviewActivity extends AppCompatActivity {
         title = intent.getExtras().getString("title");
         date = intent.getExtras().getString("date");
 
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_review);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
         FirebaseStorage fs = FirebaseStorage.getInstance();
         StorageReference sr = fs.getReference().child(uid + "/performance/" + title+date);
         sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -96,4 +101,23 @@ public class ReviewActivity extends AppCompatActivity {
         });
 
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.modify:
+//                    수정 액티비티로 이동
+//                    Intent intent = new Intent(getApplicationContext(), TicketActivity.class);
+//                    startActivity(intent);
+                    return true;
+                case R.id.delete:
+//                    경고창으로 확인받고 db에서 데이터, 이미지 삭제
+                    return true;
+            }
+            return false;
+        }
+    };
 }
