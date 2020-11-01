@@ -4,16 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,11 +29,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UploadActivity extends AppCompatActivity {
-    private TextView ttitle, tplace, tdate, tseat;
+    private TextView ttitle, tplace, tdate, tseat, treview;
     private String uid, title, place, date, seat, review, img;
     private Button btn;
     private FirebaseAuth firebaseAuth;
     private Map<String, Object> data;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +48,12 @@ public class UploadActivity extends AppCompatActivity {
         place = getIntent().getStringExtra("place");
         date = getIntent().getStringExtra("date");
         seat = getIntent().getStringExtra("seat");
+        review = "";
 
+        onClick();
+    }
+
+    private void onClick(){
         ttitle = findViewById(R.id.title);
         ttitle.setText(title);
         tplace = findViewById(R.id.place);
@@ -53,17 +62,27 @@ public class UploadActivity extends AppCompatActivity {
         tdate.setText(date);
         tseat = findViewById(R.id.seat);
         tseat.setText(seat);
+        treview = findViewById(R.id.review);
+        treview.setText(review);
         btn = findViewById(R.id.btn);
-
-        dataSet();
-        urlSet();
-        upLoad();
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                title=ttitle.getText().toString();
+                place=tplace.getText().toString();
+                date=tdate.getText().toString();
+                seat=tseat.getText().toString();
+                review = treview.getText().toString();
+
+                dataSet();
+                urlSet();
+                upLoad();
+
+
                 Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
-//                intent.putExtra("id",uid);
+                intent.putExtra("id",uid);
                 startActivity(intent);
             }
         });
@@ -84,7 +103,7 @@ public class UploadActivity extends AppCompatActivity {
 
     private void dataSet() {
         data = new HashMap<>();
-        review = "후기후기후기후기";
+        //review = "후기후기후기후기";
         long now = System.currentTimeMillis();
         Date d = new Date(now);
         SimpleDateFormat mFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -100,7 +119,7 @@ public class UploadActivity extends AppCompatActivity {
         data.put("seat", seat);
         data.put("place", place);
         data.put("time", time);
-        data.put("show", true);
+        data.put("show",true);
     }
 
     private void upLoad() {

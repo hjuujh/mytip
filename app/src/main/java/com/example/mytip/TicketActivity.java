@@ -2,6 +2,8 @@ package com.example.mytip;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.os.Bundle;
@@ -53,6 +55,7 @@ import org.w3c.dom.Text;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -122,7 +125,11 @@ public class TicketActivity extends AppCompatActivity {
                     intent.putExtra("place", place);
                     intent.putExtra("date", date);
                     intent.putExtra("seat", seating);
-                    imgUri = getImageUri(getApplicationContext(),bitmap);
+                    try {
+                        imgUri = getImgUri(getApplicationContext(),bitmap,Bitmap.CompressFormat.JPEG);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     imgUpload();
                     startActivity(intent);
                 }
@@ -246,7 +253,7 @@ public class TicketActivity extends AppCompatActivity {
 
     public void resizeClick(View view) {
         try {
-            imgUri = getImageUri(getApplicationContext(),bitmap);
+            imgUri = getImgUri(getApplicationContext(),bitmap, Bitmap.CompressFormat.JPEG);
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setType("image/*");
             intent.setData(imgUri);
@@ -261,16 +268,75 @@ public class TicketActivity extends AppCompatActivity {
             startActivityForResult(intent, 0);
             next=true;
 
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IOException e) {
             Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private Uri getImageUri(Context context, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
+
+//    private Uri getImageUri(Context context, Bitmap inImage) {
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+//        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+//        return Uri.parse(path);
+//    }
+
+    @NonNull
+    private Uri getImgUri(@NonNull final Context context, @NonNull final Bitmap bitmap,
+                           @NonNull final Bitmap.CompressFormat format
+    ) throws IOException
+    {
+        String relativeLocation = Environment.DIRECTORY_PICTURES;
+
+        final ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativeLocation);
+
+        final ContentResolver resolver = context.getContentResolver();
+
+        OutputStream stream = null;
+        Uri uri = null;
+
+        try
+        {
+            final Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            uri = resolver.insert(contentUri, contentValues);
+
+            if (uri == null)
+            {
+                throw new IOException("Failed to create new MediaStore record.");
+            }
+
+            stream = resolver.openOutputStream(uri);
+
+            if (stream == null)
+            {
+                throw new IOException("Failed to get output stream.");
+            }
+
+            if (bitmap.compress(format, 95, stream) == false)
+            {
+                throw new IOException("Failed to save bitmap.");
+            }
+
+            return uri;
+        }
+        catch (IOException e)
+        {
+            if (uri != null)
+            {
+                // Don't leave an orphan entry in the MediaStore
+                resolver.delete(uri, null, null);
+            }
+
+            throw e;
+        }
+        finally
+        {
+            if (stream != null)
+            {
+                stream.close();
+            }
+        }
     }
 
     public void textClick(View view) {
