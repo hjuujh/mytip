@@ -63,7 +63,7 @@ public class UploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
-                intent.putExtra("id",uid);
+//                intent.putExtra("id",uid);
                 startActivity(intent);
             }
         });
@@ -100,6 +100,7 @@ public class UploadActivity extends AppCompatActivity {
         data.put("seat", seat);
         data.put("place", place);
         data.put("time", time);
+        data.put("show", true);
     }
 
     private void upLoad() {

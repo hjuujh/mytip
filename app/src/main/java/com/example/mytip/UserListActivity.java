@@ -93,8 +93,8 @@ public class UserListActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.add:
-//                    intent = new Intent(getApplicationContext(), TicketActivity.class);
-//                    startActivity(intent);
+                    intent = new Intent(getApplicationContext(), TicketActivity.class);
+                    startActivity(intent);
                     return true;
                 case R.id.performance:
                     intent = new Intent(getApplicationContext(), ReviewListActivity.class);

@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +48,8 @@ public class ReviewListActivity extends AppCompatActivity {
     private Intent intent;
     private boolean me;
     private BottomNavigationView navigation;
+    private Boolean checked;
+    private final String TAG="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +71,16 @@ public class ReviewListActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         init();
-        getReviewList();
 
         if(me){
+            getMyReviewList();
             navigation = (BottomNavigationView) findViewById(R.id.my_list);
             navigation.setVisibility(View.VISIBLE);
             navigation.setOnNavigationItemSelectedListener(myOnNavigationItemSelectedListener);
             navigation.setSelectedItemId(R.id.performance);
         }
         else{
+            getOtherReviewList();
             navigation = (BottomNavigationView) findViewById(R.id.other_list);
             navigation.setVisibility(View.VISIBLE);
             navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
@@ -88,7 +95,7 @@ public class ReviewListActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
     }
 
-    private void getReviewList(){
+    private void getMyReviewList(){
 
         Query query = db.collection("users").document(uid).collection("performance")
                 .orderBy("time", Query.Direction.DESCENDING);
@@ -114,16 +121,41 @@ public class ReviewListActivity extends AppCompatActivity {
 
                 holder.textTitle.setText(model.getTitle());
                 holder.textDate.setText(model.getDate());
+                holder.chx.setChecked(model.getShow());
 
                 holder.itemView.setOnClickListener(v -> {
-//                    Snackbar.make(reviewList, model.getTitle()+" at "+model.getDate(), Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
                     Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
                     intent.putExtra("uid", uid);
                     intent.putExtra("title", model.getTitle());
                     intent.putExtra("date", model.getDate());
                     intent.putExtra("me", me);
                     startActivity(intent);
+                });
+
+                holder.chx.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (model.getShow()){
+                            checked = false;
+                        }
+                        else {
+                            checked = true;
+                        }
+                        db.collection("users").document(uid).collection("performance").document(model.getTitle()+model.getDate())
+                                .update("show", checked)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+                    }
                 });
             }
 
@@ -146,6 +178,72 @@ public class ReviewListActivity extends AppCompatActivity {
 
     }
 
+    private void getOtherReviewList(){
+
+//        TextView text = (TextView) reviewList.findViewById(R.id.checktext);
+//        CheckBox chx = (CheckBox) reviewList.findViewById(R.id.checkbox);
+//        text.setVisibility(View.GONE);
+//        chx.setVisibility(View.GONE);
+
+        Query query = db.collection("users").document(uid).collection("performance")
+                .whereEqualTo("show", true)
+                .orderBy("time", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<ReviewList> response = new FirestoreRecyclerOptions.Builder<ReviewList>()
+                .setQuery(query, ReviewList.class)
+                .build();
+
+        adapter = new FirestoreRecyclerAdapter<ReviewList, ReviewsHolder>(response) {
+            @Override
+            public void onBindViewHolder(ReviewsHolder holder, int position, ReviewList model) {
+
+                FirebaseStorage fs = FirebaseStorage.getInstance();
+                StorageReference sr = fs.getReference().child(uid + "/performance/" + model.getTitle()+model.getDate());
+                sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        Glide.with(holder.itemView)
+                                .load(task.getResult())
+                                .into(holder.imageView);
+                    }
+                });
+
+                holder.textTitle.setText(model.getTitle());
+                holder.textDate.setText(model.getDate());
+
+                holder.itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+                    intent.putExtra("uid", uid);
+                    intent.putExtra("title", model.getTitle());
+                    intent.putExtra("date", model.getDate());
+                    intent.putExtra("me", me);
+                    startActivity(intent);
+                });
+
+                holder.chx.setVisibility(View.GONE);
+                holder.textCheck.setVisibility(View.GONE);
+            }
+
+            @Override
+            public ReviewsHolder onCreateViewHolder(ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext())
+                        .inflate(R.layout.review_item, group, false);
+
+                return new ReviewsHolder(view);
+            }
+
+            @Override
+            public void onError(FirebaseFirestoreException e) {
+                Log.e("error", e.getMessage());
+            }
+        };
+
+        adapter.notifyDataSetChanged();
+        reviewList.setAdapter(adapter);
+
+    }
+
+
     public class ReviewsHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.image)
         ImageView imageView;
@@ -153,6 +251,10 @@ public class ReviewListActivity extends AppCompatActivity {
         TextView textTitle;
         @BindView(R.id.date)
         TextView textDate;
+        @BindView(R.id.checkbox)
+        CheckBox chx;
+        @BindView(R.id.checktext)
+        TextView textCheck;
 
         public ReviewsHolder(View itemView) {
             super(itemView);

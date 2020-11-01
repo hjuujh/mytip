@@ -12,16 +12,18 @@ public class ReviewList {
     private String review;
     private String seat;
     private String time;
+    private Boolean show;
 
     public ReviewList() {    }
 
-    public ReviewList(String title, String date, String img, String review,String seat, String time) {
+    public ReviewList(String title, String date, String img, String review,String seat, String time, Boolean show) {
         this.title = title;
         this.date = date;
         this.img = img;
         this.review = review;
         this.seat = seat;
         this.time = time;
+        this.show = show;
     }
 
     public String getTitle() {
@@ -70,5 +72,13 @@ public class ReviewList {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public Boolean getShow() {
+        return show;
+    }
+
+    public void setShow(Boolean show) {
+        this.show = show;
     }
 }
