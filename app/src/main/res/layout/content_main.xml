@@ -12,13 +12,6 @@
     tools:context=".TicketActivity"
     tools:showIn="@layout/activity_ticket">
 
-    <TextView
-        android:id="@+id/image_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Use the floating action button to select an image." />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
