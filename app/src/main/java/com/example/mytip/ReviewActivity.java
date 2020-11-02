@@ -54,6 +54,8 @@ public class ReviewActivity extends AppCompatActivity {
     @BindView(R.id.img)
     ImageView imgview;
 
+    String rtitle, rdate, rplace, rseat, rreview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,11 +101,11 @@ public class ReviewActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
-                    titleview.setText(task.getResult().get("title").toString());
-                    dateview.setText(task.getResult().get("date").toString());
-                    placeview.setText(task.getResult().get("place").toString());
-                    seatview.setText(task.getResult().get("seat").toString());
-                    reviewview.setText(task.getResult().get("review").toString());
+                    titleview.setText(rtitle=task.getResult().get("title").toString());
+                    dateview.setText(rdate=task.getResult().get("date").toString());
+                    placeview.setText(rplace=task.getResult().get("place").toString());
+                    seatview.setText(rseat=task.getResult().get("seat").toString());
+                    reviewview.setText(rreview=task.getResult().get("review").toString());
                 }
                 else{
                     System.out.println("###########");
@@ -125,9 +127,13 @@ public class ReviewActivity extends AppCompatActivity {
                     finish();
                     return true;
                 case R.id.modify:
-//                    수정 액티비티로 이동
-//                    Intent intent = new Intent(getApplicationContext(), TicketActivity.class);
-//                    startActivity(intent);
+//                   수정 액티비티로 이동
+                    Intent intent = new Intent(getApplicationContext(), UploadActivity.class);intent.putExtra("uid", uid);
+                    intent.putExtra("title", rtitle);
+                    intent.putExtra("place", rplace);
+                    intent.putExtra("date", rdate);
+                    intent.putExtra("seat", rseat);
+                    startActivity(intent);
                     return true;
                 case R.id.delete:
 //                    경고창으로 확인받고 db에서 데이터, 이미지 삭제
