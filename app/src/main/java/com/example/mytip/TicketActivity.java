@@ -76,7 +76,6 @@ public class TicketActivity extends AppCompatActivity {
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
 
-    private TextView mImageDetails;//chae - 나중에 없앨것
     private ImageView mMainImage;
     private ProgressBar bar;
     private Button upbtn;
@@ -102,7 +101,6 @@ public class TicketActivity extends AppCompatActivity {
             builder.create().show();
         });
 
-        mImageDetails = findViewById(R.id.image_details);
         mMainImage = findViewById(R.id.main_image);
         bar = findViewById(R.id.progressBar);
         Button upbtn = findViewById(R.id.upload);
@@ -638,8 +636,6 @@ public class TicketActivity extends AppCompatActivity {
 
 
     private void callCloudVision(final Bitmap bitmap) {
-        // Switch text to loading
-        mImageDetails.setText(R.string.loading_message);
 
         if (bitmap != null)
             bar.setVisibility(View.VISIBLE);
