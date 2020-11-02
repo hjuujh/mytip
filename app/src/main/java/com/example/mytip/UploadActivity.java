@@ -48,12 +48,12 @@ public class UploadActivity extends AppCompatActivity {
         place = getIntent().getStringExtra("place");
         date = getIntent().getStringExtra("date");
         seat = getIntent().getStringExtra("seat");
-        review = "";
+        review = getIntent().getStringExtra("review");
 
-        onClick();
+        Click();
     }
 
-    private void onClick(){
+    private void Click(){
         ttitle = findViewById(R.id.title);
         ttitle.setText(title);
         tplace = findViewById(R.id.place);
