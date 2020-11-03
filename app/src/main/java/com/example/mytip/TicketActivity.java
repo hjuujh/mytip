@@ -75,6 +75,7 @@ public class TicketActivity extends AppCompatActivity {
     private static final int GALLERY_IMAGE_REQUEST = 1;
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
+    public static final int RESIZE_REQUEST = 4;
 
     private ImageView mMainImage;
     private ProgressBar bar;
@@ -124,7 +125,7 @@ public class TicketActivity extends AppCompatActivity {
                     intent.putExtra("date", date);
                     intent.putExtra("seat", seating);
                     try {
-                        imgUri = getImgUri(getApplicationContext(),bitmap,Bitmap.CompressFormat.JPEG);
+                        imgUri = getImgUri(getApplicationContext(),bitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -175,7 +176,7 @@ public class TicketActivity extends AppCompatActivity {
         } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
             Uri photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", getCameraFile());
             uploadImage(photoUri);
-        }else if(requestCode == 0){
+        }else if(requestCode == RESIZE_REQUEST){
             final Bundle extras = data.getExtras();
 
             if(extras != null)
@@ -184,11 +185,12 @@ public class TicketActivity extends AppCompatActivity {
                 mMainImage.setImageBitmap(bitmap);
             }
             // 임시 파일 삭제
-            File f = new File(imgUri.getPath());
-            if(f.exists())
-            {
-                f.delete();
-            }
+//            File f = new File(imgUri.getPath());
+//            if(f.exists())
+//            {
+//                f.delete();
+//                Log.d("chae","yes");
+//            }
         }
         if(resultCode != RESULT_OK)
         {
@@ -251,7 +253,7 @@ public class TicketActivity extends AppCompatActivity {
 
     public void resizeClick(View view) {
         try {
-            imgUri = getImgUri(getApplicationContext(),bitmap, Bitmap.CompressFormat.JPEG);
+            imgUri = getImgUri(getApplicationContext(),bitmap);
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setType("image/*");
             intent.setData(imgUri);
@@ -263,8 +265,9 @@ public class TicketActivity extends AppCompatActivity {
             intent.putExtra("aspectY", 12);
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
-            startActivityForResult(intent, 0);
+            startActivityForResult(intent, RESIZE_REQUEST);
             next=true;
+            File f = new File(imgUri.getPath());
 
         } catch (NullPointerException | IOException e) {
             Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
@@ -280,15 +283,11 @@ public class TicketActivity extends AppCompatActivity {
 //    }
 
     @NonNull
-    private Uri getImgUri(@NonNull final Context context, @NonNull final Bitmap bitmap,
-                           @NonNull final Bitmap.CompressFormat format
-    ) throws IOException
+    private Uri getImgUri(@NonNull final Context context, @NonNull final Bitmap bitmap) throws IOException
     {
         String relativeLocation = Environment.DIRECTORY_PICTURES;
 
         final ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativeLocation);
-
         final ContentResolver resolver = context.getContentResolver();
 
         OutputStream stream = null;
@@ -311,7 +310,7 @@ public class TicketActivity extends AppCompatActivity {
                 throw new IOException("Failed to get output stream.");
             }
 
-            if (bitmap.compress(format, 95, stream) == false)
+            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream) == false)
             {
                 throw new IOException("Failed to save bitmap.");
             }
@@ -624,7 +623,7 @@ public class TicketActivity extends AppCompatActivity {
 
         }
     }
-    private void imgUpload() {
+    private void imgUpload() {//여기서 문제인거 같음
         FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
         String key = title+date;
