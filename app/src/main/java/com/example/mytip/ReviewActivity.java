@@ -4,11 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +23,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -39,7 +36,6 @@ public class ReviewActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private DocumentReference docRef;
     private StorageReference sr;
-    private Context context;
     private BottomNavigationView navigation;
     @BindView(R.id.title)
     TextView titleview;
@@ -61,7 +57,6 @@ public class ReviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
 
-        context = this;
         ButterKnife.bind(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -128,11 +123,12 @@ public class ReviewActivity extends AppCompatActivity {
                     return true;
                 case R.id.modify:
 //                   수정 액티비티로 이동
-                    Intent intent = new Intent(getApplicationContext(), UploadActivity.class);intent.putExtra("uid", uid);
+                    Intent intent = new Intent(getApplicationContext(), UploadActivity.class);
                     intent.putExtra("title", rtitle);
                     intent.putExtra("place", rplace);
                     intent.putExtra("date", rdate);
                     intent.putExtra("seat", rseat);
+                    intent.putExtra("review", rreview);
                     startActivity(intent);
                     return true;
                 case R.id.delete:

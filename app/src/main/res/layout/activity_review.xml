@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="fill_parent">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,11 +6,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ReviewActivity">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginHorizontal="20dp"
         />
 
     <TextView
@@ -21,44 +29,75 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/img"
+        android:layout_marginBottom="15dp"
+        android:layout_marginHorizontal="10dp"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:textColor="#000000"
         />
 
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"/>
+        android:layout_below="@id/title"
+        android:layout_marginBottom="15dp"
+        android:layout_marginHorizontal="10dp"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:textColor="#000000"
+        />
 
     <TextView
         android:id="@+id/place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/date"
-        />
+        android:layout_below="@+id/date"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="#000000"
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/seat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/place"
-        />
+        android:layout_below="@+id/place"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="#000000"
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/review"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/seat"
+        android:layout_marginBottom="80dp"
+        android:layout_marginHorizontal="10dp"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:textColor="#000000"
         />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navigation_review"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        app:menu="@menu/review_menu"
-        app:itemIconTint="@drawable/review_menu_selector"
-        app:itemTextColor="@drawable/review_menu_selector"
-        android:layout_below="@id/review"
-        />
-
 </RelativeLayout>
 </ScrollView>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navigation_review"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            app:itemIconTint="@drawable/review_menu_selector"
+            app:itemTextColor="@drawable/review_menu_selector"
+            app:menu="@menu/review_menu" />
+
+    </RelativeLayout>
+</RelativeLayout>
+

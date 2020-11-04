@@ -14,11 +14,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -34,7 +38,9 @@ public class UploadActivity extends AppCompatActivity {
     private Button btn;
     private FirebaseAuth firebaseAuth;
     private Map<String, Object> data;
-
+    private FirebaseFirestore db;
+    private DocumentReference docRef;
+    private StorageReference sr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +86,7 @@ public class UploadActivity extends AppCompatActivity {
                 urlSet();
                 upLoad();
 
-
                 Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
-                intent.putExtra("id",uid);
                 startActivity(intent);
             }
         });
@@ -92,10 +96,6 @@ public class UploadActivity extends AppCompatActivity {
 
         FirebaseStorage fs = FirebaseStorage.getInstance();
         StorageReference sr = fs.getReference().child(uid + "/performance/" + title+date);
-//        String url = sr.getDownloadUrl().addOnCompleteListener(this, new );
-
-        System.out.println(")))))))))");
-//        System.out.println(url);
 
         data.put("img", img);
 
@@ -124,27 +124,40 @@ public class UploadActivity extends AppCompatActivity {
 
     private void upLoad() {
         final String TAG = "";
-        System.out.println("&&&&&&&&&&&&&&&&");
-        System.out.println(img);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(uid)
-                .collection("performance").document(title+date)
-                .set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db = FirebaseFirestore.getInstance();
 
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG,"DocumentSnapshot successfully written");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
+        try{
 
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+            docRef = db.collection("users").document(uid)
+                    .collection("performance").document(title+date);
+
+            docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                }
+            });
+        }
+        catch (Exception e){ }
+        finally {
+            db.collection("users").document(uid)
+                    .collection("performance").document(title+date)
+                    .set(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"DocumentSnapshot successfully written");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+        }
     }
-
 }

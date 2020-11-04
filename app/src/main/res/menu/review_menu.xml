@@ -5,18 +5,21 @@
         android:id="@+id/cancel"
         android:enabled="true"
         android:checked="false"
+        android:icon="@drawable/ic_menu_back"
         android:title="뒤로"/>
 
     <item
         android:id="@+id/modify"
         android:enabled="true"
         android:checked="false"
+        android:icon="@drawable/ic_menu_edit"
         android:title="수정"/>
 
     <item
         android:id="@+id/delete"
         android:enabled="true"
         android:checked="false"
+        android:icon="@drawable/ic_menu_delete"
         android:title="삭제"/>
 
 </menu>
