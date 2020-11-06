@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Thread.sleep;
+
 public class UploadActivity extends AppCompatActivity {
     private TextView ttitle, tplace, tdate, tseat, treview;
     private String uid, title, place, date, seat, review, img;
@@ -43,6 +45,7 @@ public class UploadActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private DocumentReference docRef;
     private StorageReference sr;
+    private Boolean newticket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +60,11 @@ public class UploadActivity extends AppCompatActivity {
         date = getIntent().getStringExtra("date");
         seat = getIntent().getStringExtra("seat");
         review = getIntent().getStringExtra("review");
-        img = getIntent().getStringExtra("imgUri");
-        imgUri = Uri.parse(img);
-
+        newticket = getIntent().getBooleanExtra("newticket",false);
+        if(newticket) {
+            img = getIntent().getStringExtra("imgUri");
+            imgUri = Uri.parse(img);
+        }
         Click();
     }
 
@@ -76,6 +81,10 @@ public class UploadActivity extends AppCompatActivity {
         treview.setText(review);
         btn = findViewById(R.id.btn);
 
+        if(!newticket) {//새로운티켓이 아닐때는 수정불가
+            ttitle.setFocusable(false);
+            tdate.setFocusable(false);
+        }
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,7 +97,14 @@ public class UploadActivity extends AppCompatActivity {
 
                 dataSet();
                 //urlSet();
-                upLoad();
+                if(newticket) {
+                    imgUpload();
+                }
+                try {
+                    upLoad();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
                 startActivity(intent);
@@ -123,26 +139,22 @@ public class UploadActivity extends AppCompatActivity {
         data.put("place", place);
         data.put("time", time);
         data.put("show",true);
-
-        imgUpload();
     }
     private void imgUpload() {
         FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
-        String key = title+date;
-        StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
+        StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+title+date);
 
         imgRef.putFile(imgUri);
         System.out.println("이미지 업로드 성공");
     }
 
-    private void upLoad() {
+    private void upLoad() throws InterruptedException {
         final String TAG = "";
 
         db = FirebaseFirestore.getInstance();
 
         try{
-
             docRef = db.collection("users").document(uid)
                     .collection("performance").document(title+date);
 
@@ -153,8 +165,10 @@ public class UploadActivity extends AppCompatActivity {
                 }
             });
         }
-        catch (Exception e){ }
+        catch (Exception e){
+        }
         finally {
+            //imgUpload();
             db.collection("users").document(uid)
                     .collection("performance").document(title+date)
                     .set(data)
@@ -172,6 +186,7 @@ public class UploadActivity extends AppCompatActivity {
                             Log.w(TAG, "Error writing document", e);
                         }
                     });
+            sleep(2000);
         }
     }
 }
