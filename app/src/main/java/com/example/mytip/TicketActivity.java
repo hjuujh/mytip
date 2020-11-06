@@ -124,12 +124,13 @@ public class TicketActivity extends AppCompatActivity {
                     intent.putExtra("place", place);
                     intent.putExtra("date", date);
                     intent.putExtra("seat", seating);
+                    intent.putExtra("newticket",true);//새로운 티켓인지
                     try {
                         imgUri = getImgUri(getApplicationContext(),bitmap);
+                        intent.putExtra("imgUri",imgUri.toString());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    intent.putExtra("imgUri",imgUri.toString());
                     //imgUpload();
                     startActivity(intent);
                 }

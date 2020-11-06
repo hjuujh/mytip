@@ -130,7 +130,6 @@ public class ReviewActivity extends AppCompatActivity {
                     intent.putExtra("date", rdate);
                     intent.putExtra("seat", rseat);
                     intent.putExtra("review", rreview);
-                    intent.putExtra("imgUri",imgUri.toString());
                     startActivity(intent);
                     return true;
                 case R.id.delete:
