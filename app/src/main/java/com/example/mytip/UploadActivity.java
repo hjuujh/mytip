@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import java.util.Map;
 public class UploadActivity extends AppCompatActivity {
     private TextView ttitle, tplace, tdate, tseat, treview;
     private String uid, title, place, date, seat, review, img;
+    private Uri imgUri;
     private Button btn;
     private FirebaseAuth firebaseAuth;
     private Map<String, Object> data;
@@ -55,6 +57,8 @@ public class UploadActivity extends AppCompatActivity {
         date = getIntent().getStringExtra("date");
         seat = getIntent().getStringExtra("seat");
         review = getIntent().getStringExtra("review");
+        img = getIntent().getStringExtra("imgUri");
+        imgUri = Uri.parse(img);
 
         Click();
     }
@@ -83,7 +87,7 @@ public class UploadActivity extends AppCompatActivity {
                 review = treview.getText().toString();
 
                 dataSet();
-                urlSet();
+                //urlSet();
                 upLoad();
 
                 Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
@@ -103,12 +107,11 @@ public class UploadActivity extends AppCompatActivity {
 
     private void dataSet() {
         data = new HashMap<>();
-        //review = "후기후기후기후기";
         long now = System.currentTimeMillis();
         Date d = new Date(now);
         SimpleDateFormat mFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = mFormat.format(d);
-        String key = title+date;
+        //String key = title+date;
 
         System.out.println("###############");
         System.out.println(img);
@@ -120,6 +123,17 @@ public class UploadActivity extends AppCompatActivity {
         data.put("place", place);
         data.put("time", time);
         data.put("show",true);
+
+        imgUpload();
+    }
+    private void imgUpload() {
+        FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
+
+        String key = title+date;
+        StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
+
+        imgRef.putFile(imgUri);
+        System.out.println("이미지 업로드 성공");
     }
 
     private void upLoad() {

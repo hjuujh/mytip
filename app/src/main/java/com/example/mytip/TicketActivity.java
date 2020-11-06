@@ -129,7 +129,8 @@ public class TicketActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    imgUpload();
+                    intent.putExtra("imgUri",imgUri.toString());
+                    //imgUpload();
                     startActivity(intent);
                 }
             }
@@ -623,7 +624,8 @@ public class TicketActivity extends AppCompatActivity {
 
         }
     }
-    private void imgUpload() {//여기서 문제인거 같음
+
+    private void imgUpload() {
         FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
         String key = title+date;
@@ -649,7 +651,7 @@ public class TicketActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
+    private Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {//내가볼때는 이것도 뺴도될거 같은디 chae
 
         int originalWidth = bitmap.getWidth();
         int originalHeight = bitmap.getHeight();

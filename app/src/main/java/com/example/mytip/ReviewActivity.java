@@ -51,6 +51,7 @@ public class ReviewActivity extends AppCompatActivity {
     ImageView imgview;
 
     String rtitle, rdate, rplace, rseat, rreview;
+    Uri imgUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +85,7 @@ public class ReviewActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 Glide.with(getApplicationContext())
-                        .load(task.getResult())
+                        .load(imgUri=task.getResult())
                         .into(imgview);
             }
         });
@@ -129,6 +130,7 @@ public class ReviewActivity extends AppCompatActivity {
                     intent.putExtra("date", rdate);
                     intent.putExtra("seat", rseat);
                     intent.putExtra("review", rreview);
+                    intent.putExtra("imgUri",imgUri.toString());
                     startActivity(intent);
                     return true;
                 case R.id.delete:
