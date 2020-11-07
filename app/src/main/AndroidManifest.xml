@@ -11,9 +11,9 @@
     <application
         android:allowBackup="true"
         android:configChanges="orientation"
-        android:icon="@mipmap/chaeyoung"
+        android:icon="@mipmap/ic_launcher"
         android:label="MY TIP"
-        android:roundIcon="@mipmap/chaeyoung"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait">
