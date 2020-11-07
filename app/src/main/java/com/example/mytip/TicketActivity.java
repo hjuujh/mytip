@@ -178,7 +178,7 @@ public class TicketActivity extends AppCompatActivity {
         } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
             Uri photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", getCameraFile());
             uploadImage(photoUri);
-        }else if(requestCode == RESIZE_REQUEST){
+        }else if(requestCode == RESIZE_REQUEST && resultCode == RESULT_OK){
             final Bundle extras = data.getExtras();
 
             if(extras != null)
@@ -450,14 +450,17 @@ public class TicketActivity extends AppCompatActivity {
             place="";
             seating="";
 
+            if(message=="nothing") {
+                Toast.makeText(activity, "글씨를 인식할 수 없습니다", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             char[] array_word = new char[message.length()];
             for (int i = 0; i < array_word.length; i++) { //스트링을 한글자씩 끊어 배열에 저장
                 array_word[i] = message.charAt(i);
             }
             int len = array_word.length;
-//            String date = "";
-//            String title = "";
-//            String place = "";
+
             boolean melon = false;
             for (int i = 0; i < len; i++) {
                 if (array_word[i] != '\n') {
@@ -625,17 +628,6 @@ public class TicketActivity extends AppCompatActivity {
 
         }
     }
-
-    private void imgUpload() {
-        FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-
-        String key = title+date;
-        StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+key);
-
-        imgRef.putFile(imgUri);
-        System.out.println("이미지 업로드 성공");
-    }
-
 
     private void callCloudVision(final Bitmap bitmap) {
 
