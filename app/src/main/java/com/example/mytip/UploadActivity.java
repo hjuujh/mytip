@@ -1,21 +1,16 @@
 package com.example.mytip;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,8 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.Thread.sleep;
 
 public class UploadActivity extends AppCompatActivity {
     private TextView ttitle, tplace, tdate, tseat, treview;
@@ -85,39 +78,44 @@ public class UploadActivity extends AppCompatActivity {
             ttitle.setFocusable(false);
             tdate.setFocusable(false);
         }
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                title=ttitle.getText().toString();
-                place=tplace.getText().toString();
-                date=tdate.getText().toString();
-                seat=tseat.getText().toString();
-                review = treview.getText().toString();
+        btn.setOnClickListener(view -> {//디비에 넣는 시간 벌기 +  제목명과 일시는 못바꾼다고 한번 더 확인
+            title=ttitle.getText().toString();
+            place=tplace.getText().toString();
+            date=tdate.getText().toString();
+            seat=tseat.getText().toString();
+            review = treview.getText().toString();
+            dataSet();
+            Intent intent = new Intent(getApplicationContext(), ReviewListActivity.class);
+            if(newticket) {
+                imgUpload();
+                AlertDialog.Builder builder = new AlertDialog.Builder(UploadActivity.this);
+                builder
+                        .setMessage("공연명과 일시는 바꿀 수 없습니다. 공연명 [" + title + "] 일시 [" + date + "]가 맞습니까?")
+                        .setCancelable(false)
+                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
 
-                dataSet();
-                //urlSet();
-                if(newticket) {
-                    imgUpload();
-                }
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                try {
+                                    upLoad();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                startActivity(intent);
+                            }
+
+                        })
+                        .setNegativeButton("아니요", (dialog, which) -> dialog.cancel());
+                builder.create().show();
+            }else{
                 try {
                     upLoad();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                Intent intent = new Intent(getApplicationContext(),ReviewListActivity.class);
                 startActivity(intent);
             }
         });
-    }
-
-    private void urlSet() {
-
-        FirebaseStorage fs = FirebaseStorage.getInstance();
-        StorageReference sr = fs.getReference().child(uid + "/performance/" + title+date);
-
-        data.put("img", img);
 
     }
 
@@ -140,6 +138,7 @@ public class UploadActivity extends AppCompatActivity {
         data.put("time", time);
         data.put("show",true);
     }
+
     private void imgUpload() {
         FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
@@ -168,7 +167,6 @@ public class UploadActivity extends AppCompatActivity {
         catch (Exception e){
         }
         finally {
-            //imgUpload();
             db.collection("users").document(uid)
                     .collection("performance").document(title+date)
                     .set(data)
@@ -186,7 +184,6 @@ public class UploadActivity extends AppCompatActivity {
                             Log.w(TAG, "Error writing document", e);
                         }
                     });
-            sleep(2000);
         }
     }
 }
