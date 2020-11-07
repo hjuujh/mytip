@@ -7,12 +7,42 @@
     android:orientation="vertical"
     tools:context=".UserListActivity">
 
+    <LinearLayout
+        android:id="@+id/search_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="8"
+            />
+    </LinearLayout>
+<!--    android:layout_alignParentTop="true"-->
     <ListView
         android:id="@+id/userview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="50dp"/>
+        android:layout_marginBottom="50dp"
+        android:layout_below="@+id/search_bar"
+        android:textFilterEnabled="true"
+        android:visibility="gone"
+        />
+    <ListView
+        android:id="@+id/reviewview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_below="@+id/search_bar"
+        android:textFilterEnabled="true"
+        android:visibility="gone"
+        />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/user_list"

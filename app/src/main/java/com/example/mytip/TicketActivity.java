@@ -110,8 +110,6 @@ public class TicketActivity extends AppCompatActivity {
         firebaseAuth =  FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
-        System.out.println("#################");
-        System.out.println(uid);
         upbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

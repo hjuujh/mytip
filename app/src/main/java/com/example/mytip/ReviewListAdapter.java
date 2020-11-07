@@ -8,15 +8,17 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 
-public class UserListAdapter extends BaseAdapter implements Filterable {
-    private ArrayList<UserItem> itemList = new ArrayList<UserItem>() ;
-    private ArrayList<UserItem> filteredItemList = itemList ;
+public class ReviewListAdapter extends BaseAdapter implements Filterable {
+    private ArrayList<ReviewItem> itemList = new ArrayList<ReviewItem>() ;
+    private ArrayList<ReviewItem> filteredItemList = itemList ;
     private Filter listFilter;
+    private int selected;
 
-    public UserListAdapter() {
-
+    public ReviewListAdapter(int selected) {
+        this.selected = selected;
     }
     @Override
     public int getCount() {
@@ -40,26 +42,30 @@ public class UserListAdapter extends BaseAdapter implements Filterable {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.user_item, parent, false);
+            convertView = inflater.inflate(R.layout.search_item, parent, false);
         }
 
         TextView nameView = (TextView) convertView.findViewById(R.id.name) ;
-        TextView emailView = (TextView) convertView.findViewById(R.id.email) ;
+        TextView dateView = (TextView) convertView.findViewById(R.id.date) ;
+        TextView titleView = (TextView) convertView.findViewById(R.id.title) ;
 
-        UserItem item = filteredItemList.get(position);
+        ReviewItem item = filteredItemList.get(position);
 
-        nameView.setText(item.getName());
-        emailView.setText(item.getEmail());
+        nameView.setText(item.getUname());
+        dateView.setText(item.getDate());
+        titleView.setText(item.getTitle());
 
         return convertView;
     }
 
-    public void addItem(String name, String email, String uid) {
-        UserItem item = new UserItem();
+    public void addItem(String name, String date, String title, String uid, String review) {
+        ReviewItem item = new  ReviewItem();
 
-        item.setName(name);
-        item.setEmail(email);
+        item.setUname(name);
+        item.setDate(date);
+        item.setTitle(title);
         item.setUid(uid);
+        item.setReview(review);
 
         itemList.add(item);
     }
@@ -67,7 +73,7 @@ public class UserListAdapter extends BaseAdapter implements Filterable {
     @Override
     public Filter getFilter() {
         if (listFilter == null) {
-            listFilter = new ListFilter() ;
+            listFilter = new ReviewListAdapter.ListFilter() ;
         }
 
         return listFilter ;
@@ -83,13 +89,26 @@ public class UserListAdapter extends BaseAdapter implements Filterable {
                 results.values = itemList ;
                 results.count = itemList.size() ;
             } else {
-                ArrayList<UserItem> itemFiterList = new ArrayList<>() ;
+                ArrayList<ReviewItem> itemFiterList = new ArrayList<>() ;
 
-                for (UserItem item : itemList) {
-                    if (item.getName().toUpperCase().contains(constraint.toString().toUpperCase()))
-                    {
-                        itemFiterList.add(item) ;
+                for (ReviewItem item : itemList) {
+
+                    switch (selected){
+                        case 1:
+                            if (item.getTitle().toUpperCase().contains(constraint.toString().toUpperCase()))
+                            {
+                                itemFiterList.add(item) ;
+                            }
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            if (item.getReview().toUpperCase().contains(constraint.toString().toUpperCase()))
+                            {
+                                itemFiterList.add(item) ;
+                            }
                     }
+
                 }
 
                 results.values = itemFiterList ;
@@ -102,7 +121,7 @@ public class UserListAdapter extends BaseAdapter implements Filterable {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
 
-            filteredItemList = (ArrayList<UserItem>) results.values ;
+            filteredItemList = (ArrayList<ReviewItem>) results.values ;
 
             if (results.count > 0) {
                 notifyDataSetChanged() ;
@@ -111,5 +130,4 @@ public class UserListAdapter extends BaseAdapter implements Filterable {
             }
         }
     }
-//    https://recipes4dev.tistory.com/96
 }

@@ -91,6 +91,9 @@ public class ReviewActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
+        System.out.println("################");
+        System.out.println(uid);
+        System.out.println(title+date);
         docRef = db.collection("users").document(uid)
                 .collection("performance").document(title+date);
         docRef.get().addOnCompleteListener(this, new OnCompleteListener<DocumentSnapshot>() {
@@ -141,17 +144,39 @@ public class ReviewActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int id)
                         {
-                            docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    sr.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Toast.makeText(getApplicationContext(), "삭제 성공", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        db.collection("reviews").document((String) task.getResult().getData().get("reviewKey")).delete()
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if(task.isSuccessful()){
+                                                            db.collection("users").document(uid)
+                                                                    .collection("performance").document(title+date).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                            sr.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                @Override
+                                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                                    Toast.makeText(getApplicationContext(), "삭제 성공", Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                    }
                                 }
                             });
+
                             finish();
                         }
                     });

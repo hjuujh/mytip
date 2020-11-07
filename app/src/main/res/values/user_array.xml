@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="user_search">
+        <item>사용자</item>
+        <item>리뷰 내용</item>
+        <item>공연 제목</item>
+        <item>영화 제목</item>
+    </string-array>
+</resources>

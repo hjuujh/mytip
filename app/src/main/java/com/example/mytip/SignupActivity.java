@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -140,6 +141,19 @@ public class SignupActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
 
                     FirebaseUser user = firebaseAuth.getCurrentUser();
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(name)
+                            .build();
+                    user.updateProfile(profileUpdates)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "User profile updated.");
+                                    }
+                                }
+                            });
+
                     String email = user.getEmail();
                     String uid = user.getUid();
 
@@ -166,8 +180,6 @@ public class SignupActivity extends AppCompatActivity {
                                     Log.w(TAG, "Error writing document", e);
                                 }
                             });
-//                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//                    startActivity(intent);
 
                     finish();
                     Toast.makeText(SignupActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();

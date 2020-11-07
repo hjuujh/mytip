@@ -12,17 +12,19 @@ public class ReviewList {
     private String review;
     private String seat;
     private String time;
+    private String reviewKey;
     private Boolean show;
 
     public ReviewList() {    }
 
-    public ReviewList(String title, String date, String img, String review,String seat, String time, Boolean show) {
+    public ReviewList(String title, String date, String img, String review,String seat, String time, String reviewKey, Boolean show) {
         this.title = title;
         this.date = date;
         this.img = img;
         this.review = review;
         this.seat = seat;
         this.time = time;
+        this.reviewKey = reviewKey;
         this.show = show;
     }
 
@@ -80,5 +82,13 @@ public class ReviewList {
 
     public void setShow(Boolean show) {
         this.show = show;
+    }
+
+    public String getReviewKey() {
+        return reviewKey;
+    }
+
+    public void setReviewKey(String reviewKey) {
+        this.reviewKey = reviewKey;
     }
 }

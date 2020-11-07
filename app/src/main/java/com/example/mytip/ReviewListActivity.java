@@ -3,14 +3,20 @@ package com.example.mytip;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +35,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -50,6 +60,9 @@ public class ReviewListActivity extends AppCompatActivity {
     private BottomNavigationView navigation;
     private Boolean checked;
     private final String TAG="";
+    private Spinner reviewSpinner;
+    private EditText editTextFilter;
+    private Query query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +84,15 @@ public class ReviewListActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         init();
+        reviewSpinner = (Spinner)findViewById(R.id.spinner);
+        ArrayAdapter userAdapter = ArrayAdapter.createFromResource(this, R.array.review_search, android.R.layout.simple_spinner_item);
+        userAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        reviewSpinner.setAdapter(userAdapter);
+
+        editTextFilter = (EditText)findViewById(R.id.search);
 
         if(me){
-            getMyReviewList();
+            getMyReviewList(true);
             navigation = (BottomNavigationView) findViewById(R.id.my_list);
             navigation.setVisibility(View.VISIBLE);
             navigation.setOnNavigationItemSelectedListener(myOnNavigationItemSelectedListener);
@@ -87,6 +106,26 @@ public class ReviewListActivity extends AppCompatActivity {
             navigation.setSelectedItemId(R.id.performance);
         }
 
+        editTextFilter.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(me){
+                    if(editTextFilter.getText().equals("")){getMyReviewList(true);}
+                    else{getMyReviewList(false);}
+
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+        });
     }
 
     private void init(){
@@ -95,10 +134,35 @@ public class ReviewListActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
     }
 
-    private void getMyReviewList(){
+    private void getMyReviewList(boolean isNull){
 
-        Query query = db.collection("users").document(uid).collection("performance")
-                .orderBy("time", Query.Direction.DESCENDING);
+        System.out.println(isNull);
+        if(isNull) {
+            query = db.collection("users").document(uid).collection("performance")
+                    .orderBy("time", Query.Direction.DESCENDING);
+        }
+        else{
+            System.out.println(editTextFilter.getText());
+            String search = editTextFilter.getText().toString().toUpperCase();
+            query = db.collection("users").document(uid).collection("performance")
+                    .orderBy("title")
+                    .startAt(search).endAt(search + "\uf8ff");
+        }
+//        reviewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+//                String selected = reviewSpinner.getItemAtPosition(position).toString();
+//                if (selected.equals("사용자")) {
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//
 
         FirestoreRecyclerOptions<ReviewList> response = new FirestoreRecyclerOptions.Builder<ReviewList>()
                 .setQuery(query, ReviewList.class)
@@ -118,9 +182,11 @@ public class ReviewListActivity extends AppCompatActivity {
                                 .into(holder.imageView);
                     }
                 });
-
+                System.out.println("$$$$$$$$$$$$$$$$$$");
                 holder.textTitle.setText(model.getTitle());
+                System.out.println(model.getTitle());
                 holder.textDate.setText(model.getDate());
+                System.out.println(model.getDate());
                 holder.chx.setChecked(model.getShow());
 
                 holder.itemView.setOnClickListener(v -> {
@@ -141,8 +207,9 @@ public class ReviewListActivity extends AppCompatActivity {
                         else {
                             checked = true;
                         }
-                        db.collection("users").document(uid).collection("performance").document(model.getTitle()+model.getDate())
-                                .update("show", checked)
+                        DocumentReference docRef = db.collection("users").document(uid).collection("performance")
+                                .document(model.getTitle()+model.getDate());
+                        docRef.update("show", checked)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -155,6 +222,29 @@ public class ReviewListActivity extends AppCompatActivity {
                                         Log.w(TAG, "Error updating document", e);
                                     }
                                 });
+
+                        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.isSuccessful()){
+                                    db.collection("reviews").document((String) task.getResult().getData().get("reviewKey"))
+                                            .update("show", checked)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error updating document", e);
+                                                }
+                                            });
+                                }
+                            }
+                        });
+
                     }
                 });
             }
@@ -179,11 +269,6 @@ public class ReviewListActivity extends AppCompatActivity {
     }
 
     private void getOtherReviewList(){
-
-//        TextView text = (TextView) reviewList.findViewById(R.id.checktext);
-//        CheckBox chx = (CheckBox) reviewList.findViewById(R.id.checkbox);
-//        text.setVisibility(View.GONE);
-//        chx.setVisibility(View.GONE);
 
         Query query = db.collection("users").document(uid).collection("performance")
                 .whereEqualTo("show", true)
@@ -321,3 +406,4 @@ public class ReviewListActivity extends AppCompatActivity {
     };
 
 }
+//https://stackoverflow.com/questions/54369948/how-to-implement-a-filter-for-recyclerview-populated-from-firestore
