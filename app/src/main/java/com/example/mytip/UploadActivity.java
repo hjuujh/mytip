@@ -136,8 +136,6 @@ public class UploadActivity extends AppCompatActivity {
     private void modify() {
         final String TAG = "";
 
-        data.put("key",key);
-
         db.collection("reviews").document(key)
                 .set(allReviews)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -203,7 +201,6 @@ public class UploadActivity extends AppCompatActivity {
     private void upLoad() {
         final String TAG = "";
 
-        data.put("key",key);
         StorageReference storage = FirebaseStorage.getInstance()
                 .getReference()
                 .child("performance/"+key);

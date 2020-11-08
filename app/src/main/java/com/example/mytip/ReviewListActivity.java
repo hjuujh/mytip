@@ -149,7 +149,7 @@ public class ReviewListActivity extends AppCompatActivity {
 
                                 addItem(document.getData().get("title").toString(), document.getData().get("date").toString()
                                 ,document.getData().get("review").toString(),document.getData().get("seat").toString()
-                                ,document.getData().get("time").toString(),document.getData().get("key").toString()
+                                ,document.getData().get("time").toString(),document.getId()
                                 ,document.getData().get("show").toString());
                                 adapter.notifyDataSetChanged();
                             }
