@@ -5,7 +5,7 @@ import android.net.Uri;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class ReviewList {
+public class ReviewListItem {
     private String title;
     private String date;
     private String img;
@@ -15,9 +15,9 @@ public class ReviewList {
     private String reviewKey;
     private Boolean show;
 
-    public ReviewList() {    }
+    public ReviewListItem() {    }
 
-    public ReviewList(String title, String date, String img, String review,String seat, String time, String reviewKey, Boolean show) {
+    public ReviewListItem(String title, String date, String img, String review,String seat, String time, String reviewKey, Boolean show) {
         this.title = title;
         this.date = date;
         this.img = img;

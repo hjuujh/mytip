@@ -1,19 +1,16 @@
 package com.example.mytip;
 
 public class ReviewItem {
-    private String uid;
     private String title;
     private String date;
     private String review;
-    private boolean show;
-    private String uname;
+    private String seat;
+    private String show;
+    private String time;
+    private String key;
 
-    public String getUid() {
-        return uid;
-    }
+    public ReviewItem(){
 
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public String getTitle() {
@@ -40,19 +37,36 @@ public class ReviewItem {
         this.review = review;
     }
 
-    public boolean isShow() {
+    public String getSeat() {
+        return seat;
+    }
+
+    public void setSeat(String seat) {
+        this.seat = seat;
+    }
+
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getShow() {
         return show;
     }
 
-    public void setShow(boolean show) {
+    public void setShow(String show) {
         this.show = show;
     }
 
-    public String getUname() {
-        return uname;
+    public String getKey() {
+        return key;
     }
 
-    public void setUname(String uname) {
-        this.uname = uname;
+    public void setKey(String key) {
+        this.key = key;
     }
 }

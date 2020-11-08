@@ -1,7 +1,6 @@
 package com.example.mytip;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,12 +30,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReviewActivity extends AppCompatActivity {
-    private String uid, title, date;
+    private String uid, title, date, key;
     private boolean me;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
     private DocumentReference docRef;
     private StorageReference sr;
+    private FirebaseStorage fs;
     private BottomNavigationView navigation;
     @BindView(R.id.title)
     TextView titleview;
@@ -61,13 +62,12 @@ public class ReviewActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-//        uid = user.getUid();
 
         Intent intent = getIntent();
         uid = intent.getExtras().getString("uid");
         title = intent.getExtras().getString("title");
         date = intent.getExtras().getString("date");
+        key = intent.getExtras().getString("key");
         me = intent.getExtras().getBoolean("me");
 
         if(me){
@@ -79,8 +79,8 @@ public class ReviewActivity extends AppCompatActivity {
             navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
         }
 
-        FirebaseStorage fs = FirebaseStorage.getInstance();
-        sr = fs.getReference().child(uid + "/performance/" + title+date);
+        fs = FirebaseStorage.getInstance();
+        sr = fs.getReference().child("performance/" + key);
         sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
@@ -91,27 +91,26 @@ public class ReviewActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
-        System.out.println("################");
         System.out.println(uid);
-        System.out.println(title+date);
-        docRef = db.collection("users").document(uid)
-                .collection("performance").document(title+date);
-        docRef.get().addOnCompleteListener(this, new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    titleview.setText(rtitle=task.getResult().get("title").toString());
-                    dateview.setText(rdate=task.getResult().get("date").toString());
-                    placeview.setText(rplace=task.getResult().get("place").toString());
-                    seatview.setText(rseat=task.getResult().get("seat").toString());
-                    reviewview.setText(rreview=task.getResult().get("review").toString());
-                }
-                else{
-                    System.out.println("###########");
-                    System.out.println("fail");
-                }
-            }
-        });
+        System.out.println(key);
+        db.collection("users").document(uid)
+                .collection("performance").document(key)
+                .get().addOnCompleteListener(this, new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            titleview.setText(rtitle=task.getResult().get("title").toString());
+                            dateview.setText(rdate=task.getResult().get("date").toString());
+                            placeview.setText(rplace=task.getResult().get("place").toString());
+                            seatview.setText(rseat=task.getResult().get("seat").toString());
+                            reviewview.setText(rreview=task.getResult().get("review").toString());
+                        }
+                        else{
+                            System.out.println("###########");
+                            System.out.println("fail");
+                        }
+                    }
+                });
 
         navigation.getMenu().setGroupCheckable(0, false, true);
     }
@@ -133,6 +132,7 @@ public class ReviewActivity extends AppCompatActivity {
                     intent.putExtra("date", rdate);
                     intent.putExtra("seat", rseat);
                     intent.putExtra("review", rreview);
+                    intent.putExtra("key", key);
                     startActivity(intent);
                     return true;
                 case R.id.delete:
@@ -144,40 +144,34 @@ public class ReviewActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int id)
                         {
-                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            db.collection("users").document(uid)
+                                    .collection("performance").document(key)
+                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if(task.isSuccessful()){
-                                        db.collection("reviews").document((String) task.getResult().getData().get("reviewKey")).delete()
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if(task.isSuccessful()){
-                                                            db.collection("users").document(uid)
-                                                                    .collection("performance").document(title+date).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                        @Override
-                                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                                            sr.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                @Override
-                                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                                    Toast.makeText(getApplicationContext(), "삭제 성공", Toast.LENGTH_SHORT).show();
-                                                                                }
-                                                                            });
-                                                                        }
-                                                                    });
-                                                                }
-                                                            });
-                                                        }
-                                                    }
-                                                });
-                                    }
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getApplicationContext(), "삭제 성공", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
-                            finish();
+                            db.collection("reviews").document(key)
+                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getApplicationContext(), "삭제 성공", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            fs.getReference().child("performance/" + key)
+                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+
+                                }
+                            });
+
+                            Intent intent = new Intent(getApplicationContext(), ReviewListActivity.class);
+                            startActivity(intent);
+//                            finish();
                         }
                     });
 

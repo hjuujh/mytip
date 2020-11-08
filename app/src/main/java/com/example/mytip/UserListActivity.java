@@ -37,7 +37,8 @@ public class UserListActivity extends AppCompatActivity {
     private ListView userListView;
     private UserListAdapter userListAdapter;
     private ListView reviewListView;
-    private ReviewListAdapter reviewAdapter;
+    private SearchListAdapter searchAdapter;
+    private String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +96,8 @@ public class UserListActivity extends AppCompatActivity {
                         public void onItemClick(AdapterView parent, View v, int position, long id) {
 
                             UserItem item = (UserItem) parent.getItemAtPosition(position);
-                            String uid = item.getUid();
                             Intent intent = new Intent(getApplicationContext(), ReviewListActivity.class);
-                            intent.putExtra("id", uid);
+                            intent.putExtra("id", item.getUid());
                             startActivity(intent);
                         }
                     });
@@ -123,18 +123,18 @@ public class UserListActivity extends AppCompatActivity {
                     if (selected.equals("공연 제목")) {
                         userListView.setVisibility(View.GONE);
                         reviewListView.setVisibility(View.VISIBLE);
-                        reviewAdapter = new ReviewListAdapter(1);
-                        reviewListView.setAdapter(reviewAdapter);
+                        searchAdapter = new SearchListAdapter(1);
+                        reviewListView.setAdapter(searchAdapter);
                     } else if (selected.equals("영화 제목")) {
                         userListView.setVisibility(View.GONE);
                         reviewListView.setVisibility(View.VISIBLE);
-                        reviewAdapter = new ReviewListAdapter(2);
-                        reviewListView.setAdapter(reviewAdapter);
+                        searchAdapter = new SearchListAdapter(2);
+                        reviewListView.setAdapter(searchAdapter);
                     } else if (selected.equals("리뷰 내용")) {
                         userListView.setVisibility(View.GONE);
                         reviewListView.setVisibility(View.VISIBLE);
-                        reviewAdapter = new ReviewListAdapter(3);
-                        reviewListView.setAdapter(reviewAdapter);
+                        searchAdapter = new SearchListAdapter(3);
+                        reviewListView.setAdapter(searchAdapter);
                     }
                     db = FirebaseFirestore.getInstance();
                     db.collection("reviews")
@@ -145,8 +145,10 @@ public class UserListActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                             if ((Boolean) document.getData().get("show")) {
-                                                reviewAdapter.addItem(document.getData().get("uname").toString(), document.getData().get("date").toString(), document.getData().get("title").toString(), document.getData().get("uid").toString(), document.getData().get("review").toString());
-                                                reviewListView.setAdapter(reviewAdapter);
+                                                searchAdapter.addItem(document.getData().get("uname").toString(), document.getData().get("date").toString(),
+                                                        document.getData().get("title").toString(), document.getData().get("uid").toString(),
+                                                        document.getData().get("review").toString(), document.getId());
+                                                reviewListView.setAdapter(searchAdapter);
                                             }
                                         }
                                     } else {
@@ -158,14 +160,12 @@ public class UserListActivity extends AppCompatActivity {
                     reviewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView parent, View v, int position, long id) {
-                            ReviewItem item = (ReviewItem) parent.getItemAtPosition(position);
+                            SearchItem item = (SearchItem) parent.getItemAtPosition(position);
                             Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
                             intent.putExtra("uid",item.getUid());
-                            System.out.println(item.getUid());
                             intent.putExtra("title",item.getTitle());
-                            System.out.println(item.getTitle());
                             intent.putExtra("date",item.getDate());
-                            System.out.println(item.getDate());
+                            intent.putExtra("key",item.getKey());
                             intent.putExtra("me",false);
                             startActivity(intent);
                         }
@@ -175,7 +175,7 @@ public class UserListActivity extends AppCompatActivity {
                         @Override
                         public void afterTextChanged(Editable edit) {
                             String filterText = edit.toString();
-                            ((ReviewListAdapter) reviewListView.getAdapter()).getFilter().filter(filterText);
+                            ((SearchListAdapter) reviewListView.getAdapter()).getFilter().filter(filterText);
                         }
 
                         @Override

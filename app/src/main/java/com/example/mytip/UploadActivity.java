@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,11 +18,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,9 +37,9 @@ public class UploadActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private Map<String, Object> data, allReviews;
     private FirebaseFirestore db;
-//    private DocumentReference userRef, reviewRef;
-    private StorageReference sr;
     private Boolean newticket;
+    private String key;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +50,7 @@ public class UploadActivity extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
         uname = user.getDisplayName();
+        db = FirebaseFirestore.getInstance();
 
         title = getIntent().getStringExtra("title");
         place = getIntent().getStringExtra("place");
@@ -61,6 +61,10 @@ public class UploadActivity extends AppCompatActivity {
         if(newticket) {
             img = getIntent().getStringExtra("imgUri");
             imgUri = Uri.parse(img);
+            key = db.collection("reviews").document().getId();
+        }
+        else {
+            key = getIntent().getStringExtra("key");
         }
 
         Click();
@@ -79,10 +83,10 @@ public class UploadActivity extends AppCompatActivity {
         treview.setText(review);
         btn = findViewById(R.id.btn);
 
-        if(!newticket) {//새로운티켓이 아닐때는 수정불가
-            ttitle.setFocusable(false);
-            tdate.setFocusable(false);
-        }
+//        if(!newticket) {//새로운티켓이 아닐때는 수정불가
+//            ttitle.setFocusable(false);
+//            tdate.setFocusable(false);
+//        }
 
         btn.setOnClickListener(view -> {//디비에 넣는 시간 벌기 +  제목명과 일시는 못바꾼다고 한번 더 확인
             title=ttitle.getText().toString();
@@ -91,37 +95,85 @@ public class UploadActivity extends AppCompatActivity {
             seat=tseat.getText().toString();
             review = treview.getText().toString();
             dataSet();
-            Intent intent = new Intent(getApplicationContext(), ReviewListActivity.class);
-            if(newticket) {
-                imgUpload();
-                AlertDialog.Builder builder = new AlertDialog.Builder(UploadActivity.this);
-                builder
-                        .setMessage("공연명과 일시는 바꿀 수 없습니다. 공연명 [" + title + "] 일시 [" + date + "]가 맞습니까?")
-                        .setCancelable(false)
-                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                try {
-                                    deleteData();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                startActivity(intent);
-                            }
-
-                        })
-                        .setNegativeButton("아니요", (dialog, which) -> dialog.cancel());
-                builder.create().show();
-            }else{
-                try {
-                    deleteData();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                startActivity(intent);
+            intent = new Intent(getApplicationContext(), ReviewListActivity.class);
+//            if(newticket) {
+//                imgUpload();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(UploadActivity.this);
+//                builder
+//                        .setMessage("공연명과 일시는 바꿀 수 없습니다. 공연명 [" + title + "] 일시 [" + date + "]가 맞습니까?")
+//                        .setCancelable(false)
+//                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
+//
+//                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                try {
+//                                    deleteData();
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                startActivity(intent);
+//                            }
+//
+//                        })
+//                        .setNegativeButton("아니요", (dialog, which) -> dialog.cancel());
+//                builder.create().show();
+//            }else{
+//                try {
+//                    deleteData();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                startActivity(intent);
+//            }
+            if(newticket){
+                upLoad();
+            }
+            else {
+                modify();
             }
         });
+    }
 
+    private void modify() {
+        final String TAG = "";
+
+        data.put("key",key);
+
+        db.collection("reviews").document(key)
+                .set(allReviews)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        Log.d(TAG,"DocumentSnapshot successfully written");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+
+        db.collection("users").document(uid)
+                .collection("performance").document(key)
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG,"DocumentSnapshot successfully written");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+        startActivity(intent);
     }
 
     private void dataSet() {
@@ -131,7 +183,6 @@ public class UploadActivity extends AppCompatActivity {
         Date d = new Date(now);
         SimpleDateFormat mFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = mFormat.format(d);
-        //String key = title+date;
 
         data.put("title", title);
         data.put("date", date);
@@ -149,103 +200,53 @@ public class UploadActivity extends AppCompatActivity {
         allReviews.put("show",true);
     }
 
-    private void imgUpload() {
-        FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-
-        StorageReference imgRef= firebaseStorage.getReference(uid+"/performance/"+title+date);
-
-        imgRef.putFile(imgUri);
-        System.out.println("이미지 업로드 성공");
-    }
-
-    private void deleteData() throws InterruptedException {
-
-        db = FirebaseFirestore.getInstance();
-
-//        try{
-            db.collection("users").document(uid)
-                    .collection("performance").document(title+date)
-                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                            if(task.isSuccessful()) {
-                                try{
-                                    db.collection("reviews").document((String) task.getResult().getData().get("reviewKey")).delete()
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if(task.isSuccessful()){
-                                                        db.collection("users").document(uid)
-                                                                .collection("performance").document(title+date).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                upLoad();
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                            });
-                                }
-                                catch (Exception e){
-                                    upLoad();
-                                }
-                            }
-                        }
-                    });
-
-//        }
-//        catch (Exception e){
-//            upLoad();
-//        }
-    }
-
     private void upLoad() {
         final String TAG = "";
-        db = FirebaseFirestore.getInstance();
 
-        String reviewKey = db.collection("reviews").document().getId();
-        db.collection("reviews").document(reviewKey)
-                .set(allReviews)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        data.put("key",key);
+        StorageReference storage = FirebaseStorage.getInstance()
+                .getReference()
+                .child("performance/"+key);
+        storage.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                db.collection("reviews").document(key)
+                        .set(allReviews)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
 
-                    @Override
-                    public void onSuccess(Void aVoid) {
+                            @Override
+                            public void onSuccess(Void aVoid) {
 
-                        Log.d(TAG,"DocumentSnapshot successfully written");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
+                                Log.d(TAG,"DocumentSnapshot successfully written");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
 
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
 
+                db.collection("users").document(uid)
+                        .collection("performance").document(key)
+                        .set(data)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
 
-        data.put("reviewKey",reviewKey);
-        db.collection("users").document(uid)
-                .collection("performance").document(title+date)
-                .set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG,"DocumentSnapshot successfully written");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
 
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG,"DocumentSnapshot successfully written");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
+                startActivity(intent);
+            }
+        });
     }
 }
