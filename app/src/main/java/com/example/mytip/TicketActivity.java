@@ -452,17 +452,22 @@ public class TicketActivity extends AppCompatActivity {
             //공연일때
             TICKET ticket = new TICKET(message);
 
-            jaemok.setText(ticket.title);
-            ilsi.setText(ticket.date);
-            jangso.setText(ticket.place);
-            seat.setText(ticket.seating);
+            title = ticket.title;
+            date = ticket.date;
+            place = ticket.place;
+            seating = ticket.seating;
             //영화일때
 //            MOVIE movie = new MOVIE(message);
 //
-//            jaemok.setText(movie.title);
-//            ilsi.setText(movie.date);
-//            jangso.setText(movie.place);
-//            seat.setText(movie.seating);
+//            title = movie.title;
+//            date = movie.date;
+//            place = movie.place;
+//            seating = movie.seating;
+
+            jaemok.setText(title);
+            ilsi.setText(date);
+            jangso.setText(place);
+            seat.setText(seating);
 
             ProgressBar bar = activity.findViewById(R.id.progressBar);
             bar.setVisibility(View.GONE);
