@@ -141,6 +141,11 @@ public class SignupActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
 
                     FirebaseUser user = firebaseAuth.getCurrentUser();
+                    System.out.println("####");
+                    System.out.println("####");
+                    System.out.println("####");
+                    System.out.println("####");
+                    System.out.println(name);
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setDisplayName(name)
                             .build();

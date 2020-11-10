@@ -144,6 +144,7 @@ public class UserListActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
+                                            System.out.println(document.getData());
                                             if ((Boolean) document.getData().get("show")) {
                                                 searchAdapter.addItem(document.getData().get("uname").toString(), document.getData().get("date").toString(),
                                                         document.getData().get("title").toString(), document.getData().get("uid").toString(),
