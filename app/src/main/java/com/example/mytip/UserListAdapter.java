@@ -111,5 +111,4 @@ public class UserListAdapter extends BaseAdapter implements Filterable {
             }
         }
     }
-//    https://recipes4dev.tistory.com/96
 }
