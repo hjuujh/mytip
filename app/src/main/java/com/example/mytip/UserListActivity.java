@@ -48,6 +48,7 @@ public class UserListActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
+        db = FirebaseFirestore.getInstance();
 
         Spinner userSpinner = (Spinner)findViewById(R.id.spinner);
         ArrayAdapter userAdapter = ArrayAdapter.createFromResource(this, R.array.user_search, android.R.layout.simple_spinner_item);
@@ -59,7 +60,6 @@ public class UserListActivity extends AppCompatActivity {
         navigation.setSelectedItemId(R.id.others);
 
         EditText editTextFilter = (EditText)findViewById(R.id.search);
-        userListAdapter = new UserListAdapter();
         userListView = (ListView) findViewById(R.id.userview);
         reviewListView = (ListView) findViewById(R.id.reviewview);
 
@@ -71,8 +71,9 @@ public class UserListActivity extends AppCompatActivity {
                 if (selected.equals("사용자")) {
                     userListView.setVisibility(View.VISIBLE);
                     reviewListView.setVisibility(View.GONE);
+                    userListAdapter = new UserListAdapter();
                     userListView.setAdapter(userListAdapter);
-                    db = FirebaseFirestore.getInstance();
+
                     db.collection("users")
                             .get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -136,7 +137,7 @@ public class UserListActivity extends AppCompatActivity {
                         searchAdapter = new SearchListAdapter(3);
                         reviewListView.setAdapter(searchAdapter);
                     }
-                    db = FirebaseFirestore.getInstance();
+
                     db.collection("reviews")
                             .get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
