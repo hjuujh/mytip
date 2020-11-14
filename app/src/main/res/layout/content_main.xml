@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -17,7 +17,7 @@
     <ImageView
         android:id="@+id/main_image"
         android:layout_width="match_parent"
-        android:layout_height="111dp"
+        android:layout_height="wrap_content"
         android:background="#FFFFFF"
         android:contextClickable="false"
         android:scaleType="fitCenter"
@@ -25,7 +25,7 @@
         tools:layout_editor_absoluteX="0dp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
@@ -33,31 +33,38 @@
 
         <Button
             android:id="@+id/turn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
             android:onClick="turnClick"
             android:text="1.회전" />
 
         <Button
             android:id="@+id/cut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
+            android:layout_weight="1"
             android:onClick="resizeClick"
             android:paddingRight="10dp"
             android:text="2.자르기" />
 
         <Button
             android:id="@+id/textvision"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
             android:onClick="textClick"
             android:text="3.인식" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
@@ -65,8 +72,8 @@
 
         <TextView
             android:id="@+id/jaemok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:layout_marginRight="10dp"
             android:text="제목"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -74,21 +81,21 @@
 
         <TextView
             android:id="@+id/jaemok_txt"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/jangso"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:layout_marginRight="10dp"
             android:text="장소"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -96,21 +103,21 @@
 
         <TextView
             android:id="@+id/jangso_txt"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/ilsi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:layout_marginRight="10dp"
             android:text="일시"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -118,21 +125,21 @@
 
         <TextView
             android:id="@+id/ilsi_txt"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/seat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:layout_marginRight="10dp"
             android:text="좌석"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -140,18 +147,19 @@
 
         <TextView
             android:id="@+id/seat_txt"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 
     <Button
         android:id="@+id/upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_column="1"
-        android:layout_margin="10dp"
-        android:text="후기작성"
-        android:visibility="gone"/>
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:text="후기작성" 
+        android:visibility="gone" />
 
 </LinearLayout>

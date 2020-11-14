@@ -18,8 +18,7 @@
         <TextView
             android:id="@+id/text1"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="제목"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -28,9 +27,8 @@
         <EditText
             android:id="@+id/title"
             style="@style/ShapeAppearance.MaterialComponents.LargeComponent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:ems="10"
             android:gravity="start|top"
             android:inputType="textMultiLine" />
@@ -45,8 +43,7 @@
         <TextView
             android:id="@+id/text2"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="장소"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -55,9 +52,8 @@
         <EditText
             android:id="@+id/place"
             style="@style/ShapeAppearance.MaterialComponents.LargeComponent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:ems="10"
             android:gravity="start|top"
             android:inputType="textMultiLine" />
@@ -72,8 +68,7 @@
         <TextView
             android:id="@+id/text3"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="일시"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -82,9 +77,8 @@
         <EditText
             android:id="@+id/date"
             style="@style/ShapeAppearance.MaterialComponents.LargeComponent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:ems="10"
             android:gravity="start|top"
             android:inputType="textMultiLine" />
@@ -99,8 +93,7 @@
         <TextView
             android:id="@+id/text4"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="좌석"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -109,9 +102,8 @@
         <EditText
             android:id="@+id/seat"
             style="@style/ShapeAppearance.MaterialComponents.LargeComponent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:ems="10"
             android:gravity="start|top"
             android:inputType="textMultiLine" />
@@ -126,8 +118,7 @@
         <TextView
             android:id="@+id/text5"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="후기"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -147,7 +138,7 @@
                     android:id="@+id/review"
                     style="@style/ShapeAppearance.MaterialComponents.LargeComponent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:ems="10"
                     android:gravity="start|top"
                     android:inputType="textMultiLine"
@@ -159,8 +150,10 @@
 
     <Button
         android:id="@+id/btn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
         android:text="업로드" />
 
 </LinearLayout>
