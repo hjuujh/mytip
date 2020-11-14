@@ -17,7 +17,7 @@
     <ImageView
         android:id="@+id/main_image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="111dp"
         android:background="#FFFFFF"
         android:contextClickable="false"
         android:scaleType="fitCenter"
@@ -159,7 +159,7 @@
         android:layout_column="1"
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
-        android:text="후기작성" 
+        android:text="후기작성"
         android:visibility="gone" />
 
 </LinearLayout>
