@@ -149,7 +149,7 @@ public class UserListActivity extends AppCompatActivity {
                                             if ((Boolean) document.getData().get("show")) {
                                                 searchAdapter.addItem(document.getData().get("uname").toString(), document.getData().get("date").toString(),
                                                         document.getData().get("title").toString(), document.getData().get("uid").toString(),
-                                                        document.getData().get("review").toString(), document.getId());
+                                                        document.getData().get("review").toString(), document.getData().get("show").toString(), document.getId());
                                                 reviewListView.setAdapter(searchAdapter);
                                             }
                                         }
@@ -213,6 +213,7 @@ public class UserListActivity extends AppCompatActivity {
                     return true;
                 case R.id.movie:
 //                    영화리스트 액티비티 추가
+
                     return true;
                 case R.id.others:
                     return true;

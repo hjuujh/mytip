@@ -263,6 +263,10 @@ public class TicketActivity extends AppCompatActivity {
             intent.putExtra("outputY", 240);
             intent.putExtra("aspectX", 20);
             intent.putExtra("aspectY", 12);
+//            intent.putExtra("outputX", 240);
+//            intent.putExtra("outputY", 400);
+//            intent.putExtra("aspectX", 12);
+//            intent.putExtra("aspectY", 20);
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, RESIZE_REQUEST);

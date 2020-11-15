@@ -51,14 +51,23 @@ public class SearchListAdapter extends BaseAdapter implements Filterable {
 
         SearchItem item = filteredItemList.get(position);
 
-        nameView.setText(item.getUname());
-        dateView.setText(item.getDate());
-        titleView.setText(item.getTitle());
+        System.out.println(item.getTitle());
+        System.out.println(item.getShow());
+        if(!Boolean.parseBoolean(item.getShow())){
+            nameView.setVisibility(View.GONE);
+            dateView.setVisibility(View.GONE);
+            titleView.setVisibility(View.GONE);
+        }
+        else{
+            nameView.setText(item.getUname());
+            dateView.setText(item.getDate());
+            titleView.setText(item.getTitle());
+        }
 
         return convertView;
     }
 
-    public void addItem(String name, String date, String title, String uid, String review, String key) {
+    public void addItem(String name, String date, String title, String uid, String review, String show, String key) {
         SearchItem item = new  SearchItem();
 
         item.setUname(name);
@@ -67,6 +76,7 @@ public class SearchListAdapter extends BaseAdapter implements Filterable {
         item.setUid(uid);
         item.setReview(review);
         item.setKey(key);
+        item.setShow(show);
 
         itemList.add(item);
     }
