@@ -38,8 +38,9 @@ public class UploadActivity extends AppCompatActivity {
     private Map<String, Object> data, allReviews;
     private FirebaseFirestore db;
     private Boolean newticket;
-    private String key;
+    private String key,kind;
     private Intent intent;
+    //private int kind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class UploadActivity extends AppCompatActivity {
         date = getIntent().getStringExtra("date");
         seat = getIntent().getStringExtra("seat");
         review = getIntent().getStringExtra("review");
+        kind = getIntent().getStringExtra("kind");
+
         newticket = getIntent().getBooleanExtra("newticket",false);
         if(newticket) {
             img = getIntent().getStringExtra("imgUri");
@@ -88,7 +91,7 @@ public class UploadActivity extends AppCompatActivity {
 //            tdate.setFocusable(false);
 //        }
 
-        btn.setOnClickListener(view -> {//디비에 넣는 시간 벌기 +  제목명과 일시는 못바꾼다고 한번 더 확인
+        btn.setOnClickListener(view -> {
             title=ttitle.getText().toString();
             place=tplace.getText().toString();
             date=tdate.getText().toString();
@@ -96,34 +99,6 @@ public class UploadActivity extends AppCompatActivity {
             review = treview.getText().toString();
             dataSet();
             intent = new Intent(getApplicationContext(), ReviewListActivity.class);
-//            if(newticket) {
-//                imgUpload();
-//                AlertDialog.Builder builder = new AlertDialog.Builder(UploadActivity.this);
-//                builder
-//                        .setMessage("공연명과 일시는 바꿀 수 없습니다. 공연명 [" + title + "] 일시 [" + date + "]가 맞습니까?")
-//                        .setCancelable(false)
-//                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
-//
-//                            public void onClick(DialogInterface dialog, int whichButton) {
-//                                try {
-//                                    deleteData();
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                startActivity(intent);
-//                            }
-//
-//                        })
-//                        .setNegativeButton("아니요", (dialog, which) -> dialog.cancel());
-//                builder.create().show();
-//            }else{
-//                try {
-//                    deleteData();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                startActivity(intent);
-//            }
             if(newticket){
                 upLoad();
             }
