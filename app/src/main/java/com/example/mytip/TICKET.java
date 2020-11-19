@@ -26,7 +26,7 @@ public class TICKET {
         }
         for (int i = 0; i < len; i++) {
             if (i < len - 6) {
-                if (array_word[++i] == 'm') {
+                if (array_word[++i] == 'm' || array_word[i] == 'M') {
                     if (array_word[++i] == 'e') {
                         if (array_word[++i] == 'l') {
                             if (array_word[++i] == 'o') {
