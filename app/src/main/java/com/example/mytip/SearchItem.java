@@ -5,7 +5,7 @@ public class SearchItem {
     private String title;
     private String date;
     private String review;
-    private boolean show;
+    private String show;
     private String uname;
     private String key;
 
@@ -41,14 +41,6 @@ public class SearchItem {
         this.review = review;
     }
 
-    public boolean isShow() {
-        return show;
-    }
-
-    public void setShow(boolean show) {
-        this.show = show;
-    }
-
     public String getUname() {
         return uname;
     }
@@ -63,5 +55,13 @@ public class SearchItem {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getShow() {
+        return show;
+    }
+
+    public void setShow(String show) {
+        this.show = show;
     }
 }

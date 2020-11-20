@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.Manifest;
@@ -20,7 +21,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -46,8 +46,6 @@ import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.gson.internal.$Gson$Preconditions;
 
 import org.w3c.dom.Text;
@@ -57,10 +55,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
 
 public class TicketActivity extends AppCompatActivity {
     private static final String CLOUD_VISION_API_KEY = "AIzaSyAcp7F8b_uKzZMB3dU3yHbrmu0CCfWGRQE";
@@ -76,6 +73,8 @@ public class TicketActivity extends AppCompatActivity {
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
     public static final int RESIZE_REQUEST = 4;
+    public static final int TICKET = 5;
+    public static final int MOVIE = 6;
 
     private ImageView mMainImage;
     private ProgressBar bar;
@@ -87,11 +86,31 @@ public class TicketActivity extends AppCompatActivity {
 
     Bitmap bitmap;//티켓사진
     boolean next;//자르기 했는지
+    private static int kind;//티켓종류 (공연 , 영화)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket);
+
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(TicketActivity.this);
+        builder1
+                .setCancelable(false)
+                .setMessage("티켓의 종류를 선택해 주세요")
+                .setPositiveButton("공연", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        kind = TICKET;
+                    }
+                })
+                .setNegativeButton("영화",new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        kind = MOVIE;
+                    }
+                });
+        builder1.create().show();
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
@@ -123,6 +142,7 @@ public class TicketActivity extends AppCompatActivity {
                     intent.putExtra("date", date);
                     intent.putExtra("seat", seating);
                     intent.putExtra("newticket",true);//새로운 티켓인지
+                    intent.putExtra("kind",kind);//티켓종류
                     try {
                         imgUri = getImgUri(getApplicationContext(),bitmap);
                         intent.putExtra("imgUri",imgUri.toString());
@@ -259,10 +279,18 @@ public class TicketActivity extends AppCompatActivity {
             intent.setData(imgUri);
             //intent.setDataAndType(reuri, "image/*");
 
-            intent.putExtra("outputX", 400);
-            intent.putExtra("outputY", 240);
-            intent.putExtra("aspectX", 20);
-            intent.putExtra("aspectY", 12);
+            if(kind == TICKET) {
+                intent.putExtra("outputX", 400);
+                intent.putExtra("outputY", 240);
+                intent.putExtra("aspectX", 20);
+                intent.putExtra("aspectY", 12);
+            }
+            if(kind == MOVIE) {
+                intent.putExtra("outputX", 320);
+                intent.putExtra("outputY", 400);
+                intent.putExtra("aspectX", 12);
+                intent.putExtra("aspectY", 15);
+            }
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, RESIZE_REQUEST);
@@ -450,19 +478,23 @@ public class TicketActivity extends AppCompatActivity {
             }
 
             //공연일때
-            TICKET ticket = new TICKET(message);
+            if(kind == TICKET) {
+                TICKET ticket = new TICKET(message);
 
-            title = ticket.title;
-            date = ticket.date;
-            place = ticket.place;
-            seating = ticket.seating;
-            //영화일때
-//            MOVIE movie = new MOVIE(message);
-//
-//            title = movie.title;
-//            date = movie.date;
-//            place = movie.place;
-//            seating = movie.seating;
+                title = ticket.title;
+                date = ticket.date;
+                place = ticket.place;
+                seating = ticket.seating;
+            }
+            if(kind == MOVIE) {
+                //영화일때
+                MOVIE movie = new MOVIE(message);
+
+                title = movie.title;
+                date = movie.date;
+                place = movie.place;
+                seating = movie.seating;
+            }
 
             jaemok.setText(title);
             ilsi.setText(date);

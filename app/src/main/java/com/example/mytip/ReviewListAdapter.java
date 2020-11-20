@@ -104,10 +104,29 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
 
                                 }
                             });
+                    db.collection("reviews").document(item.getKey())
+                            .update("show", checked)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    System.out.println("성공");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
                 }
             });
         }
         else {
+            if(!Boolean.parseBoolean(item.getShow())){
+                holder.imageView.setVisibility(View.GONE);
+                holder.textTitle.setVisibility(View.GONE);
+                holder.textDate.setVisibility(View.GONE);
+            }
             holder.chx.setVisibility(View.GONE);
             holder.textCheck.setVisibility(View.GONE);
         }
