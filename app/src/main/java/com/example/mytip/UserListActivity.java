@@ -1,12 +1,16 @@
 package com.example.mytip;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,7 +42,8 @@ public class UserListActivity extends AppCompatActivity {
     private UserListAdapter userListAdapter;
     private ListView reviewListView;
     private SearchListAdapter searchAdapter;
-    private String key;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,13 @@ public class UserListActivity extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
         db = FirebaseFirestore.getInstance();
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Spinner userSpinner = (Spinner)findViewById(R.id.spinner);
         ArrayAdapter userAdapter = ArrayAdapter.createFromResource(this, R.array.user_search, android.R.layout.simple_spinner_item);
@@ -212,8 +224,9 @@ public class UserListActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case R.id.movie:
-//                    영화리스트 액티비티 추가
-
+                    intent = new Intent(getApplicationContext(), ReviewListActivity.class);
+                    intent.putExtra("p","m");
+                    startActivity(intent);
                     return true;
                 case R.id.others:
                     return true;
@@ -222,4 +235,29 @@ public class UserListActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.toolbar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.logout:
+                firebaseAuth.signOut();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.account:
+                //select account item
+                break;
+            case android.R.id.home:
+                //select back button
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

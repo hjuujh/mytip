@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,14 +36,16 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
     private boolean checked;
     private FirebaseFirestore db;
     private int selected;
+    private String type;
 
-    public ReviewListAdapter(ArrayList<ReviewItem> list, boolean me, String uid, int selected) {
+    public ReviewListAdapter(ArrayList<ReviewItem> list, boolean me, String uid, int selected, String type) {
         super();
         this.itemList = list;
         this.filteredItemList = list;
         this.me = me;
         this.uid = uid;
         this.selected = selected;
+        this.type = type;
         db = FirebaseFirestore.getInstance();
     }
 
@@ -64,7 +67,13 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
         ReviewItem item = filteredItemList.get(position) ;
 
         FirebaseStorage fs = FirebaseStorage.getInstance();
-        StorageReference sr = fs.getReference().child("performance/" + item.getKey());
+        StorageReference sr = fs.getReference().child(type+"/" + item.getKey());
+        System.out.println("###");
+        System.out.println("###");
+        System.out.println("###");
+        System.out.println("###");
+        System.out.println("###");
+        System.out.println(type+"/" + item.getKey());
         sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
@@ -89,7 +98,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
                         checked = true;
                         item.setShow("true");
                     }
-                    db.collection("users").document(uid).collection("performance")
+                    db.collection("users").document(uid).collection(type)
                             .document(item.getKey())
                             .update("show", checked)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -104,7 +113,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
 
                                 }
                             });
-                    db.collection("reviews").document(item.getKey())
+                    db.collection(type+" reviews").document(item.getKey())
                             .update("show", checked)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -133,9 +142,8 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ReviewActivity.class);
+            intent.putExtra("type", type);
             intent.putExtra("uid", uid);
-            intent.putExtra("title", item.getTitle());
-            intent.putExtra("date", item.getDate());
             intent.putExtra("key", item.getKey());
             intent.putExtra("me", me);
             context.startActivity(intent);

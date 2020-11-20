@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReviewActivity extends AppCompatActivity {
-    private String uid, title, date, key;
+    private String uid, key, type;
     private boolean me;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
@@ -65,10 +65,9 @@ public class ReviewActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         uid = intent.getExtras().getString("uid");
-        title = intent.getExtras().getString("title");
-        date = intent.getExtras().getString("date");
         key = intent.getExtras().getString("key");
         me = intent.getExtras().getBoolean("me");
+        type = intent.getExtras().getString("type");
 
         if(me){
             navigation = (BottomNavigationView) findViewById(R.id.navigation_review);
@@ -80,7 +79,7 @@ public class ReviewActivity extends AppCompatActivity {
         }
 
         fs = FirebaseStorage.getInstance();
-        sr = fs.getReference().child("performance/" + key);
+        sr = fs.getReference().child(type+"/" + key);
         sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
@@ -91,10 +90,8 @@ public class ReviewActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
-        System.out.println(uid);
-        System.out.println(key);
         db.collection("users").document(uid)
-                .collection("performance").document(key)
+                .collection(type).document(key)
                 .get().addOnCompleteListener(this, new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -133,6 +130,7 @@ public class ReviewActivity extends AppCompatActivity {
                     intent.putExtra("seat", rseat);
                     intent.putExtra("review", rreview);
                     intent.putExtra("key", key);
+                    intent.putExtra("type", type);
                     startActivity(intent);
                     return true;
                 case R.id.delete:
@@ -145,7 +143,7 @@ public class ReviewActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id)
                         {
                             db.collection("users").document(uid)
-                                    .collection("performance").document(key)
+                                    .collection(type).document(key)
                                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -153,7 +151,7 @@ public class ReviewActivity extends AppCompatActivity {
                                 }
                             });
 
-                            db.collection("reviews").document(key)
+                            db.collection(type+" reviews").document(key)
                                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -161,7 +159,7 @@ public class ReviewActivity extends AppCompatActivity {
                                 }
                             });
 
-                            fs.getReference().child("performance/" + key)
+                            fs.getReference().child(type+"/" + key)
                                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

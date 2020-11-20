@@ -142,7 +142,13 @@ public class TicketActivity extends AppCompatActivity {
                     intent.putExtra("date", date);
                     intent.putExtra("seat", seating);
                     intent.putExtra("newticket",true);//새로운 티켓인지
-                    intent.putExtra("kind",kind);//티켓종류
+                    if(kind==5){
+                        intent.putExtra("type","performance");
+                    }
+                    else{
+                        intent.putExtra("type","movie");
+                    }
+                    //티켓종류
                     try {
                         imgUri = getImgUri(getApplicationContext(),bitmap);
                         intent.putExtra("imgUri",imgUri.toString());

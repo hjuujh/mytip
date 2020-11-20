@@ -7,12 +7,21 @@
     android:orientation="vertical"
     tools:context=".ReviewListActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        />
+
     <LinearLayout
         android:id="@+id/search_bar"
+        android:layout_below="@+id/toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        >
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
@@ -53,5 +62,6 @@
         app:itemIconTint="@drawable/menu_selector"
         app:itemTextColor="@drawable/menu_selector"
         app:menu="@menu/bottom_menu" />
+<!--    </androidx.appcompat.widget.Toolbar>-->
 
 </RelativeLayout>

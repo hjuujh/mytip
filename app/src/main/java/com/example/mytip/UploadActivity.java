@@ -38,9 +38,10 @@ public class UploadActivity extends AppCompatActivity {
     private Map<String, Object> data, allReviews;
     private FirebaseFirestore db;
     private Boolean newticket;
-    private String key,kind;
+    private String key;
+    private int kind;
     private Intent intent;
-    //private int kind;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +59,13 @@ public class UploadActivity extends AppCompatActivity {
         date = getIntent().getStringExtra("date");
         seat = getIntent().getStringExtra("seat");
         review = getIntent().getStringExtra("review");
-        kind = getIntent().getStringExtra("kind");
+        type = getIntent().getStringExtra("type");
 
         newticket = getIntent().getBooleanExtra("newticket",false);
         if(newticket) {
             img = getIntent().getStringExtra("imgUri");
             imgUri = Uri.parse(img);
-            key = db.collection("reviews").document().getId();
+            key = db.collection(type+" reviews").document().getId();
         }
         else {
             key = getIntent().getStringExtra("key");
@@ -86,11 +87,6 @@ public class UploadActivity extends AppCompatActivity {
         treview.setText(review);
         btn = findViewById(R.id.btn);
 
-//        if(!newticket) {//새로운티켓이 아닐때는 수정불가
-//            ttitle.setFocusable(false);
-//            tdate.setFocusable(false);
-//        }
-
         btn.setOnClickListener(view -> {
             title=ttitle.getText().toString();
             place=tplace.getText().toString();
@@ -111,7 +107,7 @@ public class UploadActivity extends AppCompatActivity {
     private void modify() {
         final String TAG = "";
 
-        db.collection("reviews").document(key)
+        db.collection(type+" reviews").document(key)
                 .set(allReviews)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
 
@@ -130,7 +126,7 @@ public class UploadActivity extends AppCompatActivity {
                 });
 
         db.collection("users").document(uid)
-                .collection("performance").document(key)
+                .collection(type).document(key)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
 
@@ -178,11 +174,11 @@ public class UploadActivity extends AppCompatActivity {
 
         StorageReference storage = FirebaseStorage.getInstance()
                 .getReference()
-                .child("performance/"+key);
+                .child(type+"/"+key);
         storage.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                db.collection("reviews").document(key)
+                db.collection(type+" reviews").document(key)
                         .set(allReviews)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
 
@@ -201,7 +197,7 @@ public class UploadActivity extends AppCompatActivity {
                         });
 
                 db.collection("users").document(uid)
-                        .collection("performance").document(key)
+                        .collection(type).document(key)
                         .set(data)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
 

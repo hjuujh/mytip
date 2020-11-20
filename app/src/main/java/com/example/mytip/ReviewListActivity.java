@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,7 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,7 +37,7 @@ public class ReviewListActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
     private ReviewListAdapter adapter;
-    private ArrayList<ReviewItem> list = new ArrayList<>();
+    private ArrayList<ReviewItem> list;
     private Intent intent;
     private boolean me;
     private BottomNavigationView navigation;
@@ -40,6 +45,10 @@ public class ReviewListActivity extends AppCompatActivity {
     private EditText editTextFilter;
     private RecyclerView recyclerView;
     private Context context;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
+    private String type;
+    private int p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +59,42 @@ public class ReviewListActivity extends AppCompatActivity {
         firebaseAuth =  FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
+        intent = getIntent();
 
-        try {
-            id = getIntent().getExtras().getString("id");
+        if(!TextUtils.isEmpty(intent.getStringExtra("id"))){
+            id = intent.getStringExtra("id");
             uid = id;
             me = false;
         }
-        catch (Exception e){
+        else{
             uid = user.getUid();
             me = true;
         }
 
+//        id = getIntent().getExtras().getString("id");
+//        try {
+//            id = intent.getExtras().getString("id");
+//            uid = id;
+//            me = false;
+//        }
+//        catch (Exception e){
+//            uid = user.getUid();
+//            me = true;
+//        }
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         recyclerView = (RecyclerView)findViewById(R.id.review_list);
-        getReviewList();
+        setMenu();
+//        if(!TextUtils.isEmpty(intent.getStringExtra("p"))){
+//            type = "movie";
+//            getList(type);
+//            return;
+//        }
         reviewSpinner = (Spinner)findViewById(R.id.spinner);
         ArrayAdapter userAdapter = ArrayAdapter.createFromResource(this, R.array.review_search, android.R.layout.simple_spinner_item);
         userAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -70,18 +102,7 @@ public class ReviewListActivity extends AppCompatActivity {
         reviewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-
-                String selected = reviewSpinner.getItemAtPosition(position).toString();
-                if(selected.equals("제목")) {
-                    adapter = new ReviewListAdapter(list, me, uid, 1);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                }
-                else {
-                    adapter = new ReviewListAdapter(list, me, uid, 2);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                }
+                p = position;
             }
 
             @Override
@@ -91,20 +112,6 @@ public class ReviewListActivity extends AppCompatActivity {
         });
 
         editTextFilter = (EditText)findViewById(R.id.search);
-
-        if(me){
-            navigation = (BottomNavigationView) findViewById(R.id.my_list);
-            navigation.setVisibility(View.VISIBLE);
-            navigation.setOnNavigationItemSelectedListener(myOnNavigationItemSelectedListener);
-            navigation.setSelectedItemId(R.id.performance);
-        }
-        else{
-            navigation = (BottomNavigationView) findViewById(R.id.other_list);
-            navigation.setVisibility(View.VISIBLE);
-            navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
-            navigation.setSelectedItemId(R.id.performance);
-        }
-
         editTextFilter.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -120,15 +127,29 @@ public class ReviewListActivity extends AppCompatActivity {
                 adapter.getFilter().filter(charSequence);
             }
         });
+
     }
 
-    public void addItem(String title, String date, String review, String seat, String time, String key, String show) {
+    private void setMenu(){
+        if(me){
+            navigation = (BottomNavigationView) findViewById(R.id.my_list);
+            navigation.setVisibility(View.VISIBLE);
+            navigation.setOnNavigationItemSelectedListener(myOnNavigationItemSelectedListener);
+            navigation.setSelectedItemId(R.id.performance);
+        }
+        else{
+            navigation = (BottomNavigationView) findViewById(R.id.other_list);
+            navigation.setVisibility(View.VISIBLE);
+            navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
+            navigation.setSelectedItemId(R.id.performance);
+        }
+    }
+
+    public void addItem(String title, String date, String time, String key, String show) {
         ReviewItem item = new ReviewItem();
 
         item.setTitle(title);
         item.setDate(date);
-        item.setReview(review);
-        item.setSeat(seat);
         item.setTime(time);
         item.setKey(key);
         item.setShow(show);
@@ -136,9 +157,12 @@ public class ReviewListActivity extends AppCompatActivity {
         list.add(item);
     }
 
-    private void getReviewList(){
+    private void getData(String type){
 
-        db.collection("users").document(uid).collection("performance")
+        System.out.println(type);
+        System.out.println(uid);
+
+        db.collection("users").document(uid).collection(type)
                 .orderBy("time", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -148,7 +172,6 @@ public class ReviewListActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                 addItem(document.getData().get("title").toString(), document.getData().get("date").toString()
-                                ,document.getData().get("review").toString(),document.getData().get("seat").toString()
                                 ,document.getData().get("time").toString(),document.getId()
                                 ,document.getData().get("show").toString());
                                 adapter.notifyDataSetChanged();
@@ -156,6 +179,19 @@ public class ReviewListActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void getList(String type){
+        list = new ArrayList<>();
+        getData(type);
+        if(p==0){
+            adapter = new ReviewListAdapter(list, me, uid, 1,type);
+        }
+        else{
+            adapter = new ReviewListAdapter(list, me, uid, 2,type);
+        }
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener myOnNavigationItemSelectedListener
@@ -169,9 +205,12 @@ public class ReviewListActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case R.id.performance:
+                    type = "performance";
+                    getList(type);
                     return true;
                 case R.id.movie:
-//                    영화리스트 액티비티 추가
+                    type = "movie";
+                    getList(type);
                     return true;
                 case R.id.others:
                     intent = new Intent(getApplicationContext(), UserListActivity.class);
@@ -191,9 +230,12 @@ public class ReviewListActivity extends AppCompatActivity {
                 case R.id.add:
                     return true;
                 case R.id.performance:
+                    type = "performance";
+                    getList(type);
                     return true;
                 case R.id.movie:
-//                    영화리스트 액티비티 추가
+                    type = "movie";
+                    getList(type);
                     return true;
                 case R.id.back:
                     finish();
@@ -203,4 +245,29 @@ public class ReviewListActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.toolbar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.logout:
+                firebaseAuth.signOut();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.account:
+                //select account item
+                break;
+            case android.R.id.home:
+                //select back button
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
