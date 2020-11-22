@@ -203,19 +203,21 @@ public class TicketActivity extends AppCompatActivity {
             Uri photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", getCameraFile());
             uploadImage(photoUri);
         }else if(requestCode == RESIZE_REQUEST && resultCode == RESULT_OK){
-            final Bundle extras = data.getExtras();
 
-            if(extras != null)
-            {
-                bitmap = extras.getParcelable("data");
-                mMainImage.setImageBitmap(bitmap);
+            try {
+                bitmap =
+                        scaleBitmapDown(
+                                MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri),
+                                MAX_DIMENSION);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            mMainImage.setImageBitmap(bitmap);
             // 임시 파일 삭제
 //            File f = new File(imgUri.getPath());
 //            if(f.exists())
 //            {
 //                f.delete();
-//                Log.d("chae","yes");
 //            }
         }
         if(resultCode != RESULT_OK)
@@ -284,24 +286,20 @@ public class TicketActivity extends AppCompatActivity {
             intent.setType("image/*");
             intent.setData(imgUri);
             //intent.setDataAndType(reuri, "image/*");
+            intent.putExtra("output",imgUri);
 
             if(kind == TICKET) {
-                intent.putExtra("outputX", 400);
-                intent.putExtra("outputY", 240);
                 intent.putExtra("aspectX", 20);
                 intent.putExtra("aspectY", 12);
             }
             if(kind == MOVIE) {
-                intent.putExtra("outputX", 320);
-                intent.putExtra("outputY", 400);
                 intent.putExtra("aspectX", 12);
                 intent.putExtra("aspectY", 15);
             }
             intent.putExtra("scale", true);
-            intent.putExtra("return-data", true);
+            //intent.putExtra("return-data", true);
             startActivityForResult(intent, RESIZE_REQUEST);
             next=true;
-            File f = new File(imgUri.getPath());
 
         } catch (NullPointerException | IOException e) {
             Toast.makeText(this, "이미지를 먼저 불러와 주세요", Toast.LENGTH_SHORT).show();
@@ -344,7 +342,7 @@ public class TicketActivity extends AppCompatActivity {
                 throw new IOException("Failed to get output stream.");
             }
 
-            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream) == false)
+            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream) == false)
             {
                 throw new IOException("Failed to save bitmap.");
             }
@@ -536,8 +534,7 @@ public class TicketActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {//내가볼때는 이것도 뺴도될거 같은디 chae
-
+    private Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
         int originalWidth = bitmap.getWidth();
         int originalHeight = bitmap.getHeight();
         int resizedWidth = maxDimension;
