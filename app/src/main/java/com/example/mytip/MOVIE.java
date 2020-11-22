@@ -14,58 +14,132 @@ public class MOVIE {
         }
         int len = array_word.length-5;
 
+
         for (int i = 0; i < len; i++) {
             if (array_word[i] == '관') {
                 if (array_word[++i] == '람') {
                     if (array_word[++i] == '가') {
+                        int k=i;
                         if (array_word[++i] == '\n') {
-                            for (int j = i+1; j < len; j++) {
-                                if (array_word[j] == '\n') {
-                                    i = j;
-                                    break;
+                            if(array_word[++i]=='2') {
+                                place="LOTTE CINEMA";
+                                for(int j=k ;j>0;j--) {
+                                    if (array_word[j] == '\n') {
+                                        for (int l = j-1 ; l > 0; l--) {
+                                            if (array_word[l] == '\n')
+                                                break;
+                                            else
+                                                title += array_word[l];
+                                        }
+                                        break;
+                                    }
                                 }
-                                title += array_word[j];
+                                title = (new StringBuffer(title)).reverse().toString();
+                                for (int j = i; j < len; j++) {
+                                    if (array_word[j] == '\n') {
+                                        i = j;
+                                        break;
+                                    }
+                                    date += array_word[j];
+                                }
+                                for (int j = i+1; j < len; j++) {
+                                    if (array_word[j] == '\n') {
+                                        i = j;
+                                        break;
+                                    }
+                                    seating+=array_word[j];
+                                }
                             }
-                            for (int j = i+1; j < len; j++) {
-                                if (array_word[j] == '\n') {
-                                    i = j;
-                                    break;
+                            else {
+                                place="CGV";
+                                for (int j = k + 2; j < len; j++) {
+                                    if (array_word[j] == '\n') {
+                                        k = j;
+                                        break;
+                                    }
+                                    title += array_word[j];
                                 }
-                            }
-                            for (int j = i+1; j < len; j++) {
-                                if (array_word[j] == '\n') {
-                                    i = j;
-                                    break;
+//                                for (int j = k + 1; j < len; j++) {
+//                                    if (array_word[j] == '\n') {
+//                                        k = j;
+//                                        break;
+//                                    }
+//                                }
+                                for (int j = k + 1; j < len; j++) {
+                                    if (array_word[j] == '\n') {
+                                        k = j;
+                                        break;
+                                    }
+                                    date += array_word[j];
                                 }
-                                date+=array_word[j];
-                            }
-                            for (int j = i+1; j < len; j++) {
-                                if (array_word[j] == '\n') {
-                                    i = j;
-                                    break;
+                                for (int j = k + 1; j < len; j++) {
+                                    if (array_word[j] == '\n') {
+                                        break;
+                                    }
+                                    seating += array_word[j];
                                 }
-                                seating+=array_word[j];
                             }
                         }
                     }
                 }
             }
-            if(array_word[i] == 'C'){
-                if(array_word[++i] == 'G'){
-                    if(array_word[++i] == 'V'){
-                        if(array_word[++i] == ' '){
-                            place="CGV ";
-                            for(int j=i+1;j<len;j++){
-                                if(array_word[j]==' ' || array_word[j]=='\n') {
-                                    i = j;
-                                    break;
-                                }
-                                place+=array_word[j];
-                            }
-                        }
-                    }
-                }
-            }
+
+//            if(array_word[i] == 'C'){
+//                if(array_word[++i] == 'G'){
+//                    if(array_word[++i] == 'V'){
+//                        if(array_word[++i] == ' '){
+//                            place="CGV ";
+//                            for(int j=i+1;j<len;j++){
+//                                if(array_word[j]==' ' || array_word[j]=='\n') {
+//                                    i = j;
+//                                    break;
+//                                }
+//                                place+=array_word[j];
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
+
+
+        //LOTTE
+//        for (int i = 0; i < len; i++) {
+//            if (array_word[i] == '관') {
+//                if (array_word[++i] == '람') {
+//                    if (array_word[++i] == '가') {
+//                        for(int j=i ;j>0;j--) {
+//                            if (array_word[j] == '\n') {
+//                                for (int k = j - 1; k > 0; k--) {
+//                                    if (array_word[k] == '\n')
+//                                        break;
+//                                    else
+//                                        title += array_word[k];
+//                                }
+//                                break;
+//                            }
+//                        }
+//                        title = (new StringBuffer(title)).reverse().toString();
+//                        if (array_word[++i] == '\n') {
+//                            for (int j = i+1; j < len; j++) {
+//                                if (array_word[j] == '\n') {
+//                                    i = j;
+//                                    break;
+//                                }
+//                                date += array_word[j];
+//                            }
+//                            for (int j = i+1; j < len; j++) {
+//                                if (array_word[j] == '\n') {
+//                                    i = j;
+//                                    break;
+//                                }
+//                                seating+=array_word[j];
+//                            }
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
