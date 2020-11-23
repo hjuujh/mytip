@@ -16,9 +16,11 @@ public class SearchListAdapter extends BaseAdapter implements Filterable {
     private ArrayList<SearchItem> filteredItemList = itemList ;
     private Filter listFilter;
     private int selected;
+    private String type;
 
-    public SearchListAdapter(int selected) {
+    public SearchListAdapter(int selected, String type) {
         this.selected = selected;
+        this.type = type;
     }
     @Override
     public int getCount() {
@@ -111,13 +113,12 @@ public class SearchListAdapter extends BaseAdapter implements Filterable {
                                 itemFiterList.add(item) ;
                             }
                             break;
-                        case 2:
-                            break;
                         case 3:
                             if (item.getReview().toUpperCase().contains(constraint.toString().toUpperCase()))
                             {
                                 itemFiterList.add(item) ;
                             }
+                            break;
                     }
 
                 }

@@ -35,10 +35,10 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
     private Context context;
     private boolean checked;
     private FirebaseFirestore db;
-    private int selected;
+    private String selected;
     private String type;
 
-    public ReviewListAdapter(ArrayList<ReviewItem> list, boolean me, String uid, int selected, String type) {
+    public ReviewListAdapter(ArrayList<ReviewItem> list, boolean me, String uid, String selected, String type) {
         super();
         this.itemList = list;
         this.filteredItemList = list;
@@ -68,11 +68,6 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
 
         FirebaseStorage fs = FirebaseStorage.getInstance();
         StorageReference sr = fs.getReference().child(type+"/" + item.getKey());
-        System.out.println("###");
-        System.out.println("###");
-        System.out.println("###");
-        System.out.println("###");
-        System.out.println("###");
         System.out.println(type+"/" + item.getKey());
         sr.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
@@ -186,12 +181,12 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
                     ArrayList<ReviewItem> itemFiterList = new ArrayList<>() ;
                     for(ReviewItem item : itemList) {
                         switch (selected){
-                            case 1:
+                            case "제목":
                                 if(item.getTitle().toLowerCase().contains(charString.toLowerCase())) {
                                     itemFiterList.add(item);
                                 }
                                 break;
-                            case 2:
+                            case "리뷰 내용":
                                 if(item.getReview().toLowerCase().contains(charString.toLowerCase())) {
                                     itemFiterList.add(item);
                                 }

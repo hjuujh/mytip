@@ -44,6 +44,7 @@ public class UserListActivity extends AppCompatActivity {
     private SearchListAdapter searchAdapter;
     private Toolbar toolbar;
     private ActionBar actionBar;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,30 +135,38 @@ public class UserListActivity extends AppCompatActivity {
                 }
                 else {
                     if (selected.equals("공연 제목")) {
+                        type = "performance";
                         userListView.setVisibility(View.GONE);
                         reviewListView.setVisibility(View.VISIBLE);
-                        searchAdapter = new SearchListAdapter(1);
+                        searchAdapter = new SearchListAdapter(1, type);
                         reviewListView.setAdapter(searchAdapter);
                     } else if (selected.equals("영화 제목")) {
+                        type = "movie";
                         userListView.setVisibility(View.GONE);
                         reviewListView.setVisibility(View.VISIBLE);
-                        searchAdapter = new SearchListAdapter(2);
+                        searchAdapter = new SearchListAdapter(1, type);
                         reviewListView.setAdapter(searchAdapter);
-                    } else if (selected.equals("리뷰 내용")) {
+                    } else if (selected.equals("공연 리뷰 내용")) {
+                        type = "performance";
                         userListView.setVisibility(View.GONE);
                         reviewListView.setVisibility(View.VISIBLE);
-                        searchAdapter = new SearchListAdapter(3);
+                        searchAdapter = new SearchListAdapter(3, type);
+                        reviewListView.setAdapter(searchAdapter);
+                    } else if (selected.equals("영화 리뷰 내용")) {
+                        type = "movie";
+                        userListView.setVisibility(View.GONE);
+                        reviewListView.setVisibility(View.VISIBLE);
+                        searchAdapter = new SearchListAdapter(3, type);
                         reviewListView.setAdapter(searchAdapter);
                     }
 
-                    db.collection("reviews")
+                    db.collection(type + " reviews")
                             .get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
-                                            System.out.println(document.getData());
                                             if ((Boolean) document.getData().get("show")) {
                                                 searchAdapter.addItem(document.getData().get("uname").toString(), document.getData().get("date").toString(),
                                                         document.getData().get("title").toString(), document.getData().get("uid").toString(),
@@ -177,9 +186,8 @@ public class UserListActivity extends AppCompatActivity {
                             SearchItem item = (SearchItem) parent.getItemAtPosition(position);
                             Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
                             intent.putExtra("uid",item.getUid());
-                            intent.putExtra("title",item.getTitle());
-                            intent.putExtra("date",item.getDate());
                             intent.putExtra("key",item.getKey());
+                            intent.putExtra("type",type);
                             intent.putExtra("me",false);
                             startActivity(intent);
                         }
@@ -221,11 +229,12 @@ public class UserListActivity extends AppCompatActivity {
                     return true;
                 case R.id.performance:
                     intent = new Intent(getApplicationContext(), ReviewListActivity.class);
+                    intent.putExtra("type","performance");
                     startActivity(intent);
                     return true;
                 case R.id.movie:
                     intent = new Intent(getApplicationContext(), ReviewListActivity.class);
-                    intent.putExtra("p","m");
+                    intent.putExtra("type","movie");
                     startActivity(intent);
                     return true;
                 case R.id.others:
