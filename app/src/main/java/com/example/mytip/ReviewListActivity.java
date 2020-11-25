@@ -257,11 +257,12 @@ public class ReviewListActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.logout:
                 firebaseAuth.signOut();
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 break;
             case R.id.account:
-                //select account item
+                intent = new Intent(getApplicationContext(), EditActivity.class);
+                startActivity(intent);
                 break;
             case android.R.id.home:
                 //select back button

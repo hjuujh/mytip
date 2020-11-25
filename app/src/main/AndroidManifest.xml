@@ -16,7 +16,7 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme2">
-
+        <activity android:name=".EditActivity"></activity>
         <activity android:name=".UserListActivity" /> <!-- 냠냠 -->
         <activity android:name=".ReviewListActivity" />
         <activity android:name=".UploadActivity" />
