@@ -16,14 +16,21 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme2">
-        <activity android:name=".EditActivity"></activity>
+        <activity android:name=".EditActivity"
+            >
+        </activity>
         <activity android:name=".UserListActivity" /> <!-- 냠냠 -->
         <activity android:name=".ReviewListActivity" />
-        <activity android:name=".UploadActivity" />
-        <activity android:name=".TicketActivity" />
-        <activity android:name=".ReviewActivity" />
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".UploadActivity"
+            android:theme="@style/AppTheme1"/>
+        <activity android:name=".TicketActivity"
+            android:theme="@style/AppTheme1"/>
+        <activity android:name=".ReviewActivity"
+            android:theme="@style/AppTheme1"/>
+        <activity android:name=".SignupActivity"
+            android:theme="@style/AppTheme1"/>
+        <activity android:name=".LoginActivity"
+            android:theme="@style/AppTheme1"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
