@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:background="#123456"
         />
 
     <LinearLayout
@@ -25,7 +26,8 @@
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:backgroundTint="#123456"/>
         <EditText
             android:id="@+id/search"
             android:layout_width="wrap_content"
@@ -51,7 +53,8 @@
         app:itemIconTint="@drawable/menu_selector"
         app:itemTextColor="@drawable/menu_selector"
         app:menu="@menu/other_menu"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="#FFF"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/my_list"
@@ -61,7 +64,8 @@
         android:visibility="gone"
         app:itemIconTint="@drawable/menu_selector"
         app:itemTextColor="@drawable/menu_selector"
-        app:menu="@menu/bottom_menu" />
+        app:menu="@menu/bottom_menu"
+        android:background="#FFF"/>
 <!--    </androidx.appcompat.widget.Toolbar>-->
 
 </RelativeLayout>
