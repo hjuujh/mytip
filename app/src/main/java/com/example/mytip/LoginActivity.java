@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -48,8 +49,10 @@ public class LoginActivity extends AppCompatActivity {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),SignupActivity.class);
-                startActivity(intent);
+                if(checkInternetState()){
+                    Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -57,34 +60,33 @@ public class LoginActivity extends AppCompatActivity {
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                email = editem.getText().toString().trim();
-                pw = editpw.getText().toString().trim();
+                if(checkInternetState()) {
+                    email = editem.getText().toString().trim();
+                    pw = editpw.getText().toString().trim();
 
-                if ( email.length() == 0 ) {
-                    alter.setTitle("입력 확인");
-                    alter.setMessage("ID를 입력해주세요.");
-                    alter.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog,int which){
-                        }
-                    });
-                    alter.show();
-                }
-                else if ( pw.length() == 0 ) {
-                    alter.setTitle("입력 확인");
-                    alter.setMessage("비밀번호를 입력해주세요.");
-                    alter.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog,int which){
-                        }
-                    });
-                    alter.show();
-                }
-                else{
-                    text1.setVisibility(View.GONE);
-                    text2.setVisibility(View.GONE);
+                    if (email.length() == 0) {
+                        alter.setTitle("입력 확인");
+                        alter.setMessage("ID를 입력해주세요.");
+                        alter.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        alter.show();
+                    } else if (pw.length() == 0) {
+                        alter.setTitle("입력 확인");
+                        alter.setMessage("비밀번호를 입력해주세요.");
+                        alter.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        alter.show();
+                    } else {
+                        text1.setVisibility(View.GONE);
+                        text2.setVisibility(View.GONE);
 
-                    login();
+                        login();
+                    }
                 }
-
 
             }
         });
@@ -125,5 +127,14 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
-        }
+    }
+    private boolean checkInternetState() {
+        ConnectivityManager connectivityManager =(ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        if(!(connectivityManager.getActiveNetworkInfo()!=null &&connectivityManager.getActiveNetworkInfo().isConnected())){
+            Toast.makeText(LoginActivity.this, "인터넷에 연결해주세요", Toast.LENGTH_SHORT).show();
+            return false;
+        }else
+            return true;
+    }
 }
