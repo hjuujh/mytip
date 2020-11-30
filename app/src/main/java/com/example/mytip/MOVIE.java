@@ -26,9 +26,19 @@ public class MOVIE {
                                 for(int j=k ;j>0;j--) {
                                     if (array_word[j] == '\n') {
                                         for (int l = j-1 ; l > 0; l--) {
-                                            if (array_word[l] == '\n')
-                                                break;
-                                            else
+                                            if (array_word[l] == '\n') {
+                                                if ('0' <= array_word[--l] && array_word[l] <= '9') {
+                                                    break;
+                                                }else {
+                                                    for (int m = l; m >0; m--) {
+                                                        Log.d("chae", "??");
+                                                        if (array_word[m] == '\n')
+                                                            break;
+                                                        else
+                                                            title += array_word[m];
+                                                    }
+                                                }
+                                            }else
                                                 title += array_word[l];
                                         }
                                         break;
