@@ -34,7 +34,6 @@ public class UploadActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private Boolean newticket;
     private String key;
-    private int kind;
     private Intent intent;
     private String type;
 

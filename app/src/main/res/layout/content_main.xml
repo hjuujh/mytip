@@ -159,4 +159,12 @@
         android:text="후기작성"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/no_img_upload"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:text="사진없이 후기작성" />
+
 </LinearLayout>

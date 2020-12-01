@@ -78,7 +78,7 @@ public class TicketActivity extends AppCompatActivity {
 
     private ImageView mMainImage;
     private ProgressBar bar;
-    private Button upbtn;
+    private Button upbtn,noimgbtn;
 
     private static String uid, date, title, place, seating;
     private static Uri imgUri;
@@ -124,6 +124,7 @@ public class TicketActivity extends AppCompatActivity {
         mMainImage = findViewById(R.id.main_image);
         bar = findViewById(R.id.progressBar);
         Button upbtn = findViewById(R.id.upload);
+        Button noimgbtn = findViewById(R.id.no_img_upload);
 
 //        id = getIntent().getStringExtra("id");
         firebaseAuth =  FirebaseAuth.getInstance();
@@ -159,6 +160,26 @@ public class TicketActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             }
+        });
+        noimgbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), UploadActivity.class);
+                intent.putExtra("newticket",true);//새로운 티켓인지
+                Uri path;
+                if(kind==5){
+                    intent.putExtra("type","performance");
+                    path = Uri.parse("android.resource://com.example.mytip/" + R.drawable.no_ticket_img);
+                }
+                else{
+                    intent.putExtra("type","movie");
+                    path = Uri.parse("android.resource://com.example.mytip/" + R.drawable.no_movie_img);
+                }
+                intent.putExtra("imgUri",path.toString());
+                //imgUpload();
+                startActivity(intent);
+            }
+
         });
 
     }
@@ -247,6 +268,8 @@ public class TicketActivity extends AppCompatActivity {
     public void uploadImage(Uri uri) {
         if (uri != null) {
             try {
+                Button noimgbtn = findViewById(R.id.no_img_upload);
+                noimgbtn.setVisibility(View.GONE);
                 // scale the image to save on bandwidth
                 bitmap =
                         scaleBitmapDown(
