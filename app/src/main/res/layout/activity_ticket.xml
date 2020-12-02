@@ -19,8 +19,7 @@
         android:layout_marginEnd="33dp"
         android:layout_marginRight="33dp"
         android:layout_marginBottom="40dp"
-        android:src="@android:drawable/ic_menu_gallery"
-        app:backgroundTint="#123456" />
+        android:src="@android:drawable/ic_menu_gallery" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -39,7 +38,7 @@
         android:layout_marginEnd="183dp"
         android:layout_marginRight="183dp"
         android:layout_marginBottom="317dp"
-        android:progressTint="#123456"
-        android:visibility="gone" />
+        android:progressTint="#791D7C"
+        android:visibility="gone"/>
 
 </RelativeLayout>

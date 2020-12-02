@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,8 @@ public class ReviewActivity extends AppCompatActivity {
     TextView reviewview;
     @BindView(R.id.img)
     ImageView imgview;
+    @BindView(R.id.nametext)
+    TextView name;
 
     String rtitle, rdate, rplace, rseat, rreview;
     Uri imgUri;
@@ -61,21 +64,33 @@ public class ReviewActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-
+//        firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
         uid = intent.getExtras().getString("uid");
         key = intent.getExtras().getString("key");
         me = intent.getExtras().getBoolean("me");
         type = intent.getExtras().getString("type");
+        navigation = (BottomNavigationView) findViewById(R.id.navigation_review);
 
         if(me){
-            navigation = (BottomNavigationView) findViewById(R.id.navigation_review);
             navigation.setOnNavigationItemSelectedListener(myOnNavigationItemSelectedListener);
+            name.setVisibility(View.GONE);
         }
         else{
-            navigation = (BottomNavigationView) findViewById(R.id.navigation_review);
-            navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
+            navigation.setVisibility(View.GONE);
+            db.collection("users").document(uid)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            name.setText( " Name     "+task.getResult().get("name"));
+//                            name.setBackgroundResource(R.drawable.shadow);
+                        }
+                    });
+
+//            navigation = (BottomNavigationView) findViewById(R.id.navigation_review);
+//            navigation.setOnNavigationItemSelectedListener(otherOnNavigationItemSelectedListener);
         }
 
         fs = FirebaseStorage.getInstance();
@@ -89,7 +104,6 @@ public class ReviewActivity extends AppCompatActivity {
             }
         });
 
-        db = FirebaseFirestore.getInstance();
         db.collection("users").document(uid)
                 .collection(type).document(key)
                 .get().addOnCompleteListener(this, new OnCompleteListener<DocumentSnapshot>() {
@@ -187,24 +201,18 @@ public class ReviewActivity extends AppCompatActivity {
         }
     };
 
-    private BottomNavigationView.OnNavigationItemSelectedListener otherOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.cancel:
-                    finish();
-                    return true;
-                case R.id.modify:
-                    Toast.makeText(getApplicationContext(), "수정할 수 없습니다.", Toast.LENGTH_LONG).show();
-                    return true;
-                case R.id.delete:
-                    Toast.makeText(getApplicationContext(), "삭제할 수 없습니다.", Toast.LENGTH_LONG).show();
-                    return true;
-            }
-            return false;
-        }
-    };
+//    private BottomNavigationView.OnNavigationItemSelectedListener otherOnNavigationItemSelectedListener
+//            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+//
+//        @Override
+//        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//            switch (item.getItemId()) {
+//                case R.id.cancel:
+//                    finish();
+//                    return true;
+//            }
+//            return false;
+//        }
+//    };
 
 }
