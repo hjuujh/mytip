@@ -84,7 +84,7 @@ public class ReviewActivity extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            name.setText( " Name     "+task.getResult().get("name"));
+                            name.setText( "@"+task.getResult().get("name"));
 //                            name.setBackgroundResource(R.drawable.shadow);
                         }
                     });
