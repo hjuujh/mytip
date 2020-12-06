@@ -9,8 +9,8 @@
 7. [LICENSE](#LICENSE)
 
 ## 프로젝트_설명
- * MY TIP은 티켓 사진을 이용하여 구글 클라우드 비전 API으로 티켓의 문자를 인식하고 그 인식 결과를 가지고 편하게 후기를 쓸 수 있는 앱 입니다.
- * 내 손 안에서 편하게 티켓과 후기를 관리하자는 생각에서 만들었습니다. 
+MY TIP은 티켓 사진을 이용하여 구글 클라우드 비전 API으로 티켓의 문자를 인식하고 그 인식 결과를 가지고 편하게 후기를 쓸 수 있는 앱 입니다.
+내 손 안에서 편하게 티켓과 후기를 관리하자는 생각에서 만들었습니다. 
 
 ## 시스템구성도
 ![architecture](./architecture.PNG)
@@ -23,7 +23,7 @@
  * 개발 언어 - Android Studio (Java)
 
 ## API
-[Google Cloud VISION](https://cloud.google.com/vision/?hl=ko&utm_source=google&utm_medium=cpc&utm_campaign=japac-KR-all-ko-dr-bkws-all-super-trial-e-dr-1009137&utm_content=text-ad-none-none-DEV_c-CRE_263264133482-ADGP_Hybrid%20%7C%20AW%20SEM%20%7C%20BKWS%20~%20T1%20%7C%20EXA%20%7C%20ML%20%7C%201%3A1%20%7C%20KR%20%7C%20ko%20%7C%20Vision%20%7C%20google%20cloud%20vision-KWID_43700031880239430-kwd-433713029900&userloc_1030738-network_g&utm_term=KW_%EA%B5%AC%EA%B8%80%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%EB%B9%84%EC%A0%84&gclid=Cj0KCQiA2af-BRDzARIsAIVQUOfxGwUQXmoBND8Hqr_Zcni3dbh7bNnvJISXSkDgk_3iQ-cw5lYmhvwaAhd8EALw_wcB)
+ [Google Cloud VISION](https://cloud.google.com/vision/?hl=ko&utm_source=google&utm_medium=cpc&utm_campaign=japac-KR-all-ko-dr-bkws-all-super-trial-e-dr-1009137&utm_content=text-ad-none-none-DEV_c-CRE_263264133482-ADGP_Hybrid%20%7C%20AW%20SEM%20%7C%20BKWS%20~%20T1%20%7C%20EXA%20%7C%20ML%20%7C%201%3A1%20%7C%20KR%20%7C%20ko%20%7C%20Vision%20%7C%20google%20cloud%20vision-KWID_43700031880239430-kwd-433713029900&userloc_1030738-network_g&utm_term=KW_%EA%B5%AC%EA%B8%80%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%EB%B9%84%EC%A0%84&gclid=Cj0KCQiA2af-BRDzARIsAIVQUOfxGwUQXmoBND8Hqr_Zcni3dbh7bNnvJISXSkDgk_3iQ-cw5lYmhvwaAhd8EALw_wcB)
 [Firebase](https://firebase.google.com/?hl=ko) 
 
 ## 전제사항
