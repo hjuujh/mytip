@@ -31,9 +31,10 @@ public class MOVIE {
                                                     break;
                                                 }else {
                                                     for (int m = l; m >0; m--) {
-                                                        Log.d("chae", "??");
-                                                        if (array_word[m] == '\n')
+                                                        if (array_word[m] == '\n') {
+                                                            l = m+1;
                                                             break;
+                                                        }
                                                         else
                                                             title += array_word[m];
                                                     }
@@ -69,12 +70,12 @@ public class MOVIE {
                                     }
                                     title += array_word[j];
                                 }
-//                                for (int j = k + 1; j < len; j++) {
-//                                    if (array_word[j] == '\n') {
-//                                        k = j;
-//                                        break;
-//                                    }
-//                                }
+                                for (int j = k + 1; j < len; j++) {
+                                    if (array_word[j] == '\n') {
+                                        k = j;
+                                        break;
+                                    }
+                                }
                                 for (int j = k + 1; j < len; j++) {
                                     if (array_word[j] == '\n') {
                                         k = j;
